@@ -1,8 +1,8 @@
 FUNCTION_BLOCK PickAndPlaceSequence
 VAR
-    _Lift            : I_Actuator;
-    _Slide           : I_Actuator;
-    _Gripper         : I_Actuator;
+    _Lift             : I_Actuator;
+    _Slide            : I_Actuator;
+    _Gripper          : I_Actuator;
     _CurrentStep      : E_PickStep;
     _FaultText        : STRING;
     _IsStartRequested : BOOL;
@@ -17,8 +17,8 @@ END_VAR
     one is.
 
     Call CyclicLogic() once per cycle. Start() and Reset() are requests,
-    seen during the next CyclicLogic() call. After a reset it returns home the way a cycle ends:
-    lift up, then slide in.
+    seen during the next CyclicLogic() call. After a reset it returns home
+    the way a cycle ends: lift up, then slide in.
 *)
 
 METHOD FB_init : BOOL
@@ -67,7 +67,9 @@ CASE _CurrentStep OF
 
     E_PickStep.Error:
         IF _IsResetRequested THEN
-            _Lift.Reset(); _Slide.Reset(); _Gripper.Reset();
+            _Lift.Reset();
+            _Slide.Reset();
+            _Gripper.Reset();
             _FaultText := '';
             _CurrentStep := E_PickStep.RaiseEmpty;   // go home the way a cycle ends
         END_IF
@@ -117,6 +119,7 @@ IsBusy := _CurrentStep <> E_PickStep.Undefined AND _CurrentStep <> E_PickStep.Id
 
 PROPERTY PUBLIC HasFault : BOOL
 GET:
+HasFault := FALSE;
 IF _IsConfigured THEN
     HasFault := _Lift.HasFault OR _Slide.HasFault OR _Gripper.HasFault;
 END_IF

@@ -10,10 +10,8 @@ TYPE E_PickStep :
     RaiseWithPart  := 40,
     SlideOut       := 50,
     LowerToPlace   := 60,
-    ClampPart      := 65,
     OpenGripper    := 70,
     RaiseEmpty     := 80,
-    ReleaseFixture := 85,
     SlideIn        := 90,
     Done           := 100,
     Error          := 900
