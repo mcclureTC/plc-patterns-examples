@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="FieldbusLevelSensor" Id="{a64c050d-6ed1-4164-91a4-453fe244525c}" SpecialFunc="None">
+  <POU Name="FieldbusLevelSensor" Id="{764ff014-b3f0-4340-ab59-d76edc8ecf7e}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FieldbusLevelSensor IMPLEMENTS I_LevelSensor
 VAR
     _FieldbusLevel     : REFERENCE TO DINT;
@@ -8,18 +8,13 @@ VAR
     _TankHeight        : REAL;
     _IsConfigured      : BOOL;
 END_VAR
-(*
-    FieldbusLevelSensor
-
-    A level sensor that reports its reading over a fieldbus, in 0.1 mm.
-    TankHeight is the height of the vessel it measures, here the bottle.
-*)
+(* FieldbusLevelSensor: a level sensor that reports its reading over a fieldbus, in 0.1 mm. *)
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Folder Name="I_LevelSensor" Id="{68321ff1-65c2-43ae-a542-995483ef2b1f}" />
-    <Method Name="FB_init" Id="{c9d1dfe9-ae7e-4eb3-ad22-4051d0561a04}">
+    <Folder Name="I_LevelSensor" Id="{91296713-b94f-4a18-b86e-117fabb4d6a1}" />
+    <Method Name="FB_init" Id="{f91ac276-3aaa-4534-b1a1-79fa023b6e58}">
       <Declaration><![CDATA[METHOD FB_init : BOOL
 VAR_INPUT
     bInitRetains      : BOOL;
@@ -37,9 +32,9 @@ _IsConfigured := __ISVALIDREF(FieldbusLevel) AND __ISVALIDREF(IsCommunicationOk)
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="IsValid" Id="{96a914ac-4825-43cb-8b36-14b1977ca406}" FolderPath="I_LevelSensor\">
+    <Property Name="IsValid" Id="{9b07ebfb-b2e0-4d3a-8a85-a623d7d7cd5a}" FolderPath="I_LevelSensor\">
       <Declaration><![CDATA[PROPERTY PUBLIC IsValid : BOOL]]></Declaration>
-      <Get Name="Get" Id="{f72d3d36-62c9-4fa4-b6f5-8a9bc33ecb4b}">
+      <Get Name="Get" Id="{1532e17b-3134-4726-8a2b-bec267dbe063}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -49,9 +44,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="Level" Id="{543a8994-aaa8-46f5-b23a-ef15fe98bc77}" FolderPath="I_LevelSensor\">
+    <Property Name="Level" Id="{e3c11d47-521c-47e6-b6f4-d72c5f01a15a}" FolderPath="I_LevelSensor\">
       <Declaration><![CDATA[PROPERTY PUBLIC Level : REAL]]></Declaration>
-      <Get Name="Get" Id="{d8ec979f-38a9-4f42-9853-5c37d0a25e80}">
+      <Get Name="Get" Id="{707441fb-8ac7-423f-afa1-78e2deec118e}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

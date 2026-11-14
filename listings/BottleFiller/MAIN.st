@@ -1,117 +1,117 @@
 PROGRAM MAIN
 VAR
-    // Real devices
-    RealFillValve   : SolenoidValve(Name := 'Fill valve',
-                                    Output := GVL_Io.FillValveCoil,
-                                    OpenFeedback := GVL_Io.FillValveOpen,
-                                    FaultDelay := T#2S);
-    RealBottleLevel : FieldbusLevelSensor(FieldbusLevel := GVL_Io.BottleLevel,
-                                          IsCommunicationOk := GVL_Io.BottleSensorOk,
-                                          TankHeight := 250.0);          // the bottle, mm
-    RealLift        : SingleSolenoidCylinder(Name := 'Lift', MoveTimeout := T#1S,
-                                             Solenoid := GVL_Io.LiftValve,
-                                             ExtendedSensor := GVL_Io.LiftDown,
-                                             RetractedSensor := GVL_Io.LiftUp);
-    RealSlide       : DoubleSolenoidCylinder(Name := 'Slide', MoveTimeout := T#2S,
-                                             ExtendCoil := GVL_Io.SlideOutCoil,
-                                             RetractCoil := GVL_Io.SlideInCoil,
-                                             ExtendedSensor := GVL_Io.SlideOut,
-                                             RetractedSensor := GVL_Io.SlideIn);
-    RealGripper     : Gripper(Name := 'Gripper', MoveTimeout := T#500MS,
-                              Solenoid := GVL_Io.GripperValve,
-                              ExtendedSensor := GVL_Io.GripperClosed,
-                              RetractedSensor := GVL_Io.GripperOpen);
+    Clock         : TaskClock(CycleTime := LTIME#10MS);
 
-    // Simulated devices
-    SimFillValve    : SimulatedFillValve(Name := 'Fill valve (simulated)', SwitchTime := T#200MS,
-                                         FaultDelay := T#2S);
-    SimLift         : SimulatedActuator(Name := 'Lift (simulated)', MoveTimeout := T#1S,
-                                        TravelTime := T#400MS);
-    SimSlide        : SimulatedActuator(Name := 'Slide (simulated)', MoveTimeout := T#2S,
-                                        TravelTime := T#800MS);
-    SimGripper      : SimulatedActuator(Name := 'Gripper (simulated)', MoveTimeout := T#500MS,
-                                        TravelTime := T#150MS);
+    // Filling station: every candidate is declared; the routers choose
+    RealTankValve  : SolenoidValve(Output := GVL_Io.TankValveCoil,
+                                   OpenFeedback := GVL_Io.TankValveOpen,
+                                   FaultDelay := T#2S);
+    SimTankValve   : SimulatedValve(Name := 'Tank valve', Clock := Clock, TravelTime := LTIME#400MS);
+    TankValve      : FillValveRouter(Name := 'Tank valve', Source := GVL_Site.TankValveSource,
+                                     FinalHardware := RealTankValve, SimilarHardware := 0,
+                                     Simulation := SimTankValve, Test := 0);
 
-    // Routers: each chooses once, from GVL_Site
-    FillValve       : FillValveRouter(Simulated := SimFillValve, Hardware := RealFillValve,
-                                      UseHardware := GVL_Site.Switches.UseFillValveHardware);
-    SimBottleLevel  : SimulatedBottleLevel(Valve := FillValve, RisePerSecond := 25.0);
-    BottleLevel     : LevelSensorRouter(Simulated := SimBottleLevel, Hardware := RealBottleLevel,
-                                        UseHardware := GVL_Site.Switches.UseBottleLevelHardware);
-    Lift            : ActuatorRouter(Simulated := SimLift, Hardware := RealLift,
-                                     UseHardware := GVL_Site.Switches.UseLiftHardware);
-    Slide           : ActuatorRouter(Simulated := SimSlide, Hardware := RealSlide,
-                                     UseHardware := GVL_Site.Switches.UseSlideHardware);
-    PartGripper     : ActuatorRouter(Simulated := SimGripper, Hardware := RealGripper,
-                                     UseHardware := GVL_Site.Switches.UseGripperHardware);
+    RealDrainValve : SolenoidValve(Output := GVL_Io.DrainValveCoil,
+                                   OpenFeedback := GVL_Io.DrainValveOpen,
+                                   FaultDelay := T#2S);
+    SimDrainValve  : SimulatedValve(Name := 'Drain valve', Clock := Clock, TravelTime := LTIME#400MS);
+    DrainValve     : FillValveRouter(Name := 'Drain valve', Source := GVL_Site.DrainValveSource,
+                                     FinalHardware := RealDrainValve, SimilarHardware := 0,
+                                     Simulation := SimDrainValve, Test := 0);
 
-    // The sequences
-    FillSeq         : FillSequence(LevelSensor := BottleLevel, FillValve := FillValve);
-    TransferSeq     : PickAndPlaceSequence(Lift := Lift, Slide := Slide, Gripper := PartGripper);
+    SimTank        : TankModel(Inflow := TankValve, Outflow := DrainValve, Clock := Clock,
+                               FillRate := 20.0, DrainRate := 25.0, StartLevel := 0.0);
+    RealLevel      : FieldbusLevelSensor(FieldbusLevel := GVL_Io.TankLevel,
+                                         IsCommunicationOk := GVL_Io.TankSensorOk,
+                                         TankHeight := 300.0);          // the dosing tank, mm
+    TankLevel      : LevelSensorRouter(Name := 'Tank level', Source := GVL_Site.TankLevelSource,
+                                       FinalHardware := RealLevel, SimilarHardware := 0,
+                                       Simulation := SimTank, Test := 0);
+
+    // Pick-and-place station
+    RealLift       : SingleSolenoidCylinder(Name := 'Lift', MoveTimeout := T#1S,
+                                            Solenoid := GVL_Io.LiftValve,
+                                            ExtendedSensor := GVL_Io.LiftDown,
+                                            RetractedSensor := GVL_Io.LiftUp);
+    SimLift        : SimulatedActuator(Name := 'Lift', MoveTimeout := T#1S, TravelTime := T#400MS);
+    LiftCylinder   : ActuatorRouter(Name := 'Lift', Source := GVL_Site.LiftSource,
+                                    FinalHardware := RealLift, SimilarHardware := 0,
+                                    Simulation := SimLift, Test := 0);
+
+    RealSlide      : DoubleSolenoidCylinder(Name := 'Slide', MoveTimeout := T#2S,
+                                            ExtendCoil := GVL_Io.SlideOutCoil,
+                                            RetractCoil := GVL_Io.SlideInCoil,
+                                            ExtendedSensor := GVL_Io.SlideOut,
+                                            RetractedSensor := GVL_Io.SlideIn);
+    SimSlide       : SimulatedActuator(Name := 'Slide', MoveTimeout := T#2S, TravelTime := T#800MS);
+    SlideCylinder  : ActuatorRouter(Name := 'Slide', Source := GVL_Site.SlideSource,
+                                    FinalHardware := RealSlide, SimilarHardware := 0,
+                                    Simulation := SimSlide, Test := 0);
+
+    RealGripper    : Gripper(Name := 'Gripper', MoveTimeout := T#500MS,
+                             Solenoid := GVL_Io.GripperValve,
+                             ExtendedSensor := GVL_Io.GripperClosed,
+                             RetractedSensor := GVL_Io.GripperOpen);
+    SimGripper     : SimulatedActuator(Name := 'Gripper', MoveTimeout := T#500MS, TravelTime := T#150MS);
+    PartGripper    : ActuatorRouter(Name := 'Gripper', Source := GVL_Site.GripperSource,
+                                    FinalHardware := RealGripper, SimilarHardware := 0,
+                                    Simulation := SimGripper, Test := 0);
+
+    // The operations, unchanged from their pages
+    TankFill       : FillSequence(LevelSensor := TankLevel, FillValve := TankValve);
+    Dose           : DrainTankCommand(DrainValve := DrainValve, Level := TankLevel,
+                                      Clock := Clock, Timeout := LTIME#30S);
+    PickPlace      : PickAndPlaceSequence(Lift := LiftCylinder, Slide := SlideCylinder,
+                                          Gripper := PartGripper);
 
     // The tree
-    Site            : SiteCheck(Switches := GVL_Site.Switches);
-    Filling         : FillingModule(Name := 'Filling', Sequence := FillSeq);
-    Transfer        : TransferModule(Name := 'Transfer', Sequence := TransferSeq);
-    Line            : LineModule(Name := 'Line 1', Filler := Filling, Transfer := Transfer);
+    Sources        : SimulationCheck(IsOnMachine := GVL_Site.IsOnMachine);
+    Filling        : FillingModule(Name := 'Filling', Fill := TankFill, Dose := Dose);
+    PickAndPlace   : PickAndPlaceModule(Name := 'Pick and place', Sequence := PickPlace);
+    Line           : LineModule(Name := 'Line 1', Filler := Filling, Transfer := PickAndPlace);
 
-    StartEdge       : R_TRIG;
-    StopEdge        : R_TRIG;
-    ResetEdge       : R_TRIG;
-    Wired           : BOOL;
-    WiredOk         : BOOL;
+    StartEdge      : R_TRIG;
+    StopEdge       : R_TRIG;
+    ResetEdge      : R_TRIG;
+    Wired          : BOOL;
+    WiredOk        : BOOL;
 END_VAR
 
-// Build the tree once. Only the chosen device of each pair goes in it.
+// Build the tree once, and tell the check where every device comes from
 IF NOT Wired THEN
     Wired := TRUE;
-    WiredOk := Filling.AddChild(Child := FillValve.Chosen);
-    WiredOk := Transfer.AddChild(Child := Lift.Chosen) AND WiredOk;
-    WiredOk := Transfer.AddChild(Child := Slide.Chosen) AND WiredOk;
-    WiredOk := Transfer.AddChild(Child := PartGripper.Chosen) AND WiredOk;
-    WiredOk := Line.AddChild(Child := Site) AND WiredOk;
+    WiredOk := Filling.AddChild(Child := TankValve);
+    WiredOk := Filling.AddChild(Child := DrainValve) AND WiredOk;
+    WiredOk := PickAndPlace.AddChild(Child := LiftCylinder) AND WiredOk;
+    WiredOk := PickAndPlace.AddChild(Child := SlideCylinder) AND WiredOk;
+    WiredOk := PickAndPlace.AddChild(Child := PartGripper) AND WiredOk;
+    WiredOk := Line.AddChild(Child := Sources) AND WiredOk;
     WiredOk := Line.AddChild(Child := Filling) AND WiredOk;
-    WiredOk := Line.AddChild(Child := Transfer) AND WiredOk;
+    WiredOk := Line.AddChild(Child := PickAndPlace) AND WiredOk;
 
-    // Name every simulated device, for the site check, the HMI and records
-    IF FillValve.IsSimulated THEN
-        Site.AddSimulated(Name := 'Fill valve');
-    END_IF
-    IF BottleLevel.IsSimulated THEN
-        Site.AddSimulated(Name := 'Bottle level');
-    END_IF
-    IF Lift.IsSimulated THEN
-        Site.AddSimulated(Name := 'Lift');
-    END_IF
-    IF Slide.IsSimulated THEN
-        Site.AddSimulated(Name := 'Slide');
-    END_IF
-    IF PartGripper.IsSimulated THEN
-        Site.AddSimulated(Name := 'Gripper');
-    END_IF
-    GVL_Hmi.SimulatedDevices := Site.SimulatedDevices;
-    GVL_Hmi.IsFillValveSimulated := FillValve.IsSimulated;
-    GVL_Hmi.IsBottleLevelSimulated := BottleLevel.IsSimulated;
-    GVL_Hmi.IsLiftSimulated := Lift.IsSimulated;
-    GVL_Hmi.IsSlideSimulated := Slide.IsSimulated;
-    GVL_Hmi.IsGripperSimulated := PartGripper.IsSimulated;
+    WiredOk := Sources.AddDevice(Name := TankValve.Name, Source := TankValve.Source) AND WiredOk;
+    WiredOk := Sources.AddDevice(Name := DrainValve.Name, Source := DrainValve.Source) AND WiredOk;
+    WiredOk := Sources.AddDevice(Name := TankLevel.Name, Source := TankLevel.Source) AND WiredOk;
+    WiredOk := Sources.AddDevice(Name := LiftCylinder.Name, Source := LiftCylinder.Source) AND WiredOk;
+    WiredOk := Sources.AddDevice(Name := SlideCylinder.Name, Source := SlideCylinder.Source) AND WiredOk;
+    WiredOk := Sources.AddDevice(Name := PartGripper.Name, Source := PartGripper.Source) AND WiredOk;
+    GVL_Hmi.NotFinalDevices := Sources.NotFinalDevices;
 END_IF
 
 // Failure hooks act only on a simulated device
-IF FillValve.IsSimulated THEN
-    SimFillValve.SetStuck(IsStuck := GVL_Sim.FillValveStuck);
+IF TankValve.Source = E_DeviceSource.Simulation THEN
+    SimTankValve.SetStuck(IsStuck := GVL_Sim.TankValveStuck);
 END_IF
-IF BottleLevel.IsSimulated THEN
-    SimBottleLevel.SetSignalLost(IsLost := GVL_Sim.BottleLevelSignalLost);
-    SimBottleLevel.CyclicLogic();               // the level follows last scan's valve
+IF DrainValve.Source = E_DeviceSource.Simulation THEN
+    SimDrainValve.SetStuck(IsStuck := GVL_Sim.DrainValveStuck);
 END_IF
-IF Lift.IsSimulated THEN
+IF LiftCylinder.Source = E_DeviceSource.Simulation THEN
     SimLift.SetStuck(IsStuck := GVL_Sim.LiftStuck);
 END_IF
-IF Slide.IsSimulated THEN
+IF SlideCylinder.Source = E_DeviceSource.Simulation THEN
     SimSlide.SetStuck(IsStuck := GVL_Sim.SlideStuck);
 END_IF
-IF PartGripper.IsSimulated THEN
+IF PartGripper.Source = E_DeviceSource.Simulation THEN
     SimGripper.SetStuck(IsStuck := GVL_Sim.GripperStuck);
 END_IF
 
@@ -129,7 +129,9 @@ IF ResetEdge.Q THEN
     Line.Reset();
 END_IF
 
-Line.CyclicLogic();                             // the line, then the site check and each station, then its devices
+Clock.CyclicLogic();                            // first: everything below reads its time
+TankLevel.CyclicLogic();                        // runs the tank model only when it's the chosen level
+Line.CyclicLogic();                             // the line, then each station, then its devices
 
 GVL_Hmi.LineState := Line.State;
 GVL_Hmi.IsStopping := Line.IsStopping;

@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <Itf Name="I_Diagnosable" Id="{f1d959da-dc5b-4356-ba80-24fbcef7a834}">
+  <Itf Name="I_Diagnosable" Id="{ccfd0e33-5c65-4a21-b2be-3f8a17641aa6}">
     <Declaration><![CDATA[INTERFACE I_Diagnosable EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
-    <Property Name="Name" Id="{c157c208-b73d-41a3-ad6b-ca786119b18c}">
-      <Declaration><![CDATA[PROPERTY Name : STRING]]></Declaration>
-      <Get Name="Get" Id="{531d3eb1-3981-418b-88b8-ac9c855d247a}">
+    <Property Name="Name" Id="{08ea8245-8117-4fe6-b074-011a233ea390}">
+      <Declaration><![CDATA[PROPERTY Name      : STRING]]></Declaration>
+      <Get Name="Get" Id="{7b7478c0-50e3-40b2-9b2f-6539beaeb538}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
       </Get>
     </Property>
-    <Property Name="HasFault" Id="{9225cb2f-350d-4160-b62f-90797cb3f92d}">
-      <Declaration><![CDATA[PROPERTY HasFault : BOOL]]></Declaration>
-      <Get Name="Get" Id="{37321e05-b858-491c-b06e-dd48f54799a7}">
+    <Property Name="HasFault" Id="{2e69767f-5e10-49f9-9e68-27d91c18d7c4}">
+      <Declaration><![CDATA[PROPERTY HasFault  : BOOL]]></Declaration>
+      <Get Name="Get" Id="{613758ed-47bf-453d-a772-8f43f9666d87}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
       </Get>
     </Property>
-    <Property Name="FaultText" Id="{131ec4cc-f095-4f89-b981-447c73cc19ac}">
+    <Property Name="FaultText" Id="{36eafa02-d8d1-4b06-bb84-d1aac5ebc7fe}">
       <Declaration><![CDATA[PROPERTY FaultText : STRING]]></Declaration>
-      <Get Name="Get" Id="{82667492-d239-49a3-919b-6f6a9a8d6902}">
+      <Get Name="Get" Id="{bfc05c9f-fd9a-4ddb-9787-b3bc9a41b583}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

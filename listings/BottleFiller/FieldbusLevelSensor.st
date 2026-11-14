@@ -5,12 +5,7 @@ VAR
     _TankHeight        : REAL;
     _IsConfigured      : BOOL;
 END_VAR
-(*
-    FieldbusLevelSensor
-
-    A level sensor that reports its reading over a fieldbus, in 0.1 mm.
-    TankHeight is the height of the vessel it measures, here the bottle.
-*)
+(* FieldbusLevelSensor: a level sensor that reports its reading over a fieldbus, in 0.1 mm. *)
 
 METHOD FB_init : BOOL
 VAR_INPUT

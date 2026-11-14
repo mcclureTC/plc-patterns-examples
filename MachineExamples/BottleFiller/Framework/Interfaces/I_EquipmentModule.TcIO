@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <Itf Name="I_EquipmentModule" Id="{a5414091-aea6-4b9a-8d13-57ea4e3ddf28}">
+  <Itf Name="I_EquipmentModule" Id="{c6aedb48-414c-4e59-8fef-f768cb1b1042}">
     <Declaration><![CDATA[INTERFACE I_EquipmentModule EXTENDS I_Diagnosable
 ]]></Declaration>
-    <Method Name="StartCycle" Id="{fccab464-3b81-4d33-8d48-5bd5ed7227fa}">
+    <Method Name="StartCycle" Id="{2f89702c-ce7a-47fd-801e-26186d5610c4}">
       <Declaration><![CDATA[METHOD StartCycle                   // one cycle; taken up as soon as the module is ready
 ]]></Declaration>
     </Method>
-    <Property Name="IsCycleDone" Id="{c7dddd2a-4f58-49c7-8105-0d3c478365a7}">
+    <Property Name="IsCycleDone" Id="{4bdf95de-2ceb-4496-9123-08730d61480e}">
       <Declaration><![CDATA[PROPERTY IsCycleDone : BOOL]]></Declaration>
-      <Get Name="Get" Id="{a91cbe3c-4481-47ae-a481-54858399aec5}">
+      <Get Name="Get" Id="{8f52e5b5-374b-4cf5-b76a-7a6dcb4d78df}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

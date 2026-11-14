@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="EquipmentGroup" Id="{2b58e42f-f08f-43b2-a9cf-c6bdc073792c}" SpecialFunc="None">
+  <POU Name="EquipmentGroup" Id="{df4d33af-2551-433b-8607-e9e14ad03a2e}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK EquipmentGroup IMPLEMENTS I_Diagnosable, I_Resettable
 VAR CONSTANT
     MaxChildren : DINT := 16;
@@ -24,9 +24,9 @@ END_VAR
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Folder Name="I_Diagnosable" Id="{3403eac3-7424-410f-bea2-ae39bbd3a87b}" />
-    <Folder Name="I_Resettable" Id="{e743756a-9fd1-4bea-bb27-44e9c2526555}" />
-    <Method Name="FB_init" Id="{448ea1fd-7c35-4e7e-8f1e-180e87601271}">
+    <Folder Name="I_Diagnosable" Id="{dbc7c784-3082-4e7a-a527-52be38b83f31}" />
+    <Folder Name="I_Resettable" Id="{5b93e3e1-9ead-48ca-b8de-caa4b189f039}" />
+    <Method Name="FB_init" Id="{37459d52-9f7c-4e5c-80cd-c895d42c7ab4}">
       <Declaration><![CDATA[METHOD FB_init : BOOL
 VAR_INPUT
     bInitRetains : BOOL;
@@ -39,7 +39,7 @@ END_VAR
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="AddChild" Id="{c23be909-bbc2-411f-8ef6-11c58a7de8d3}">
+    <Method Name="AddChild" Id="{2abd6778-5a9d-480f-a4d1-978c85c747ec}">
       <Declaration><![CDATA[METHOD PUBLIC AddChild : BOOL
 VAR_INPUT
     Child : I_Diagnosable;
@@ -71,7 +71,7 @@ AddChild := TRUE;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Reset" Id="{e0c628a9-3646-40d5-b098-c27a8e41ff79}" FolderPath="I_Resettable\">
+    <Method Name="Reset" Id="{d83eb1a0-a4bb-4045-a892-564ca39b5da8}" FolderPath="I_Resettable\">
       <Declaration><![CDATA[METHOD PUBLIC Reset
 VAR
     i : DINT;
@@ -86,7 +86,7 @@ END_FOR
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="FirstFaultIndex" Id="{87b59f4c-92d0-4f8b-ba12-875f7c31718d}">
+    <Method Name="FirstFaultIndex" Id="{f829a151-4e73-404f-9013-ffc49c6a383e}">
       <Declaration><![CDATA[METHOD PRIVATE FirstFaultIndex : DINT
 VAR
     i : DINT;
@@ -103,23 +103,22 @@ FirstFaultIndex := _Count;            // no child has a fault
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="DescribeFault" Id="{f37a365d-28d9-48df-9177-0189a69aa6f9}">
+    <Method Name="DescribeFault" Id="{e73c7bb2-f2f3-431d-85ed-7dea1d468da0}">
       <Declaration><![CDATA[METHOD PRIVATE DescribeFault : STRING
 VAR_INPUT
     Index : DINT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[DescribeFault := '';
-IF Index < _Count THEN
+        <ST><![CDATA[IF Index < _Count THEN
     DescribeFault := CONCAT(CONCAT(_Children[Index].Name, ': '), _Children[Index].FaultText);
 END_IF
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="Name" Id="{57baa320-57ab-4256-b6eb-e4eac9eab599}" FolderPath="I_Diagnosable\">
+    <Property Name="Name" Id="{7aa0ad69-5184-4be1-bb25-58f4f5070a4f}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
-      <Get Name="Get" Id="{926d51e7-fc20-4a8b-9bd2-87458e05794a}">
+      <Get Name="Get" Id="{bbf64da4-f5f9-4a9c-b080-4edd5a761c2b}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -129,9 +128,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="HasFault" Id="{f592a4d7-3821-44b9-8bf3-9f5d2592f242}" FolderPath="I_Diagnosable\">
+    <Property Name="HasFault" Id="{191cd794-1cc7-4833-bb2d-a4c912d04755}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
-      <Get Name="Get" Id="{2912a64e-f2f8-4648-94b9-5eac5cb5d462}">
+      <Get Name="Get" Id="{2c5f48dd-947e-4748-b9ee-6a95ad8d84df}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -141,9 +140,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="FaultText" Id="{0bc678e7-1940-474f-9adf-a2aff4a32d3a}" FolderPath="I_Diagnosable\">
+    <Property Name="FaultText" Id="{81bdde44-aee3-46a5-bfae-3cca9fe62f90}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
-      <Get Name="Get" Id="{ab8e4837-e15a-4727-882d-b07712806fdf}">
+      <Get Name="Get" Id="{5c8f35b8-cc50-4198-b37e-64ded9a506b5}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -153,9 +152,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="ChildCount" Id="{8d8cdfd2-140f-47d4-ae65-d9e1d6d925f0}">
+    <Property Name="ChildCount" Id="{22bb6ff0-1add-4a6f-bcf2-87e79716d8fa}">
       <Declaration><![CDATA[PROPERTY PUBLIC ChildCount : DINT]]></Declaration>
-      <Get Name="Get" Id="{b9e16875-a1ef-4644-8afa-1f2bab6fb77f}">
+      <Get Name="Get" Id="{dea68905-fd9c-479d-88e3-0a4d2d5137b5}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

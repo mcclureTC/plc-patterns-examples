@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_Clock" Id="{82fe060f-c53c-4bbf-9d7d-8a13a7ae689c}">
+    <Declaration><![CDATA[INTERFACE I_Clock EXTENDS __SYSTEM.IQueryInterface
+]]></Declaration>
+    <Property Name="Now" Id="{64bc7d1c-0305-48dd-b2f7-c6380cba35e1}">
+      <Declaration><![CDATA[PROPERTY Now : LTIME]]></Declaration>
+      <Get Name="Get" Id="{e52e276b-2515-40ca-bd51-3730fee8b880}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

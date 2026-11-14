@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <Task Name="PlcTask" Id="{575b76cf-4a58-4015-86aa-92f804edfbba}">
+  <Task Name="PlcTask" Id="{cda58c8d-b8f8-4605-9064-b9a6091bf39a}">
     <!--CycleTime in micro seconds.-->
     <CycleTime>10000</CycleTime>
     <Priority>20</Priority>
@@ -10,11 +10,11 @@
     <PouCall>
       <Name>TestMain</Name>
     </PouCall>
-    <TaskFBGuid>{cfa4f992-f866-4953-9378-3d9605d96412}</TaskFBGuid>
-    <Fb_init>{0b88ec1d-4bfe-42b9-a9ea-5b748ad009ad}</Fb_init>
-    <Fb_exit>{ce99a6a3-b146-4f9d-8bad-395e889471c9}</Fb_exit>
-    <CycleUpdate>{6ba01efe-a92f-4c66-a426-40877925734b}</CycleUpdate>
-    <PostCycleUpdate>{5c8ea1a0-1849-4eec-8559-ef622b1075b6}</PostCycleUpdate>
+    <TaskFBGuid>{4e05bd2d-c0a5-4d2f-9380-9286e62ee0b8}</TaskFBGuid>
+    <Fb_init>{62e1e4e5-0bce-423f-91d1-2a5669ccb664}</Fb_init>
+    <Fb_exit>{daaf0404-1444-4b84-8529-84eacc76a69e}</Fb_exit>
+    <CycleUpdate>{e9043691-0e69-4630-9e40-1753f182c08d}</CycleUpdate>
+    <PostCycleUpdate>{ab2b392f-6763-4311-a05a-f3d691e8f9bc}</PostCycleUpdate>
     <ObjectProperties />
   </Task>
 </TcPlcObject>

@@ -64,6 +64,9 @@ END_VAR
 
 METHOD PROTECTED ABSTRACT DriveSafe
 
+PROPERTY PROTECTED SettleTime : TIME
+GET: SettleTime := T#0S;           // most actuators report as soon as the sensor confirms
+
 METHOD PROTECTED Configure
 VAR_INPUT
     Name        : STRING(32);
@@ -95,9 +98,6 @@ _FaultText := '';
 _Target := E_ActuatorTarget.None;
 _MoveTimer(IN := FALSE);
 _SettleTimer(IN := FALSE);
-
-PROPERTY PROTECTED SettleTime : TIME
-GET: SettleTime := T#0S;           // most actuators report as soon as the sensor confirms
 
 PROPERTY PUBLIC IsExtended : BOOL
 GET: IsExtended := NOT _HasFault AND _Target = E_ActuatorTarget.Extended AND _SettleTimer.Q;

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="SimulationCheck" Id="{f75636c3-6bcd-4d43-a3d8-a0d96221c0ba}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SimulationCheck IMPLEMENTS I_Diagnosable
+VAR
+    _IsOnMachine    : BOOL;
+    _NotFinalCount  : DINT;
+    _NotFinalNames  : STRING(255);
+END_VAR
+(*
+    SimulationCheck
+
+    Told, while wiring, the name and source of every routed device. Lists
+    every device that isn't FinalHardware, for the HMI and the event log.
+    On a controller whose site is the machine itself, each of them is a
+    fault.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_Diagnosable" Id="{78fc4a9a-42f6-4515-8c65-c7673cf49001}" />
+    <Method Name="FB_init" Id="{fea14d57-7242-403b-80fd-74771c8419eb}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    IsOnMachine  : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsOnMachine := IsOnMachine;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AddDevice" Id="{b3c2d89d-1d54-4319-af9c-0b55c47b7405}">
+      <Declaration><![CDATA[METHOD PUBLIC AddDevice : BOOL
+VAR_INPUT
+    Name   : STRING(32);
+    Source : E_DeviceSource;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AddDevice := TRUE;
+IF Source = E_DeviceSource.FinalHardware THEN
+    RETURN;
+END_IF
+_NotFinalCount := _NotFinalCount + 1;
+IF _NotFinalCount = 1 THEN
+    _NotFinalNames := Name;
+ELSE
+    _NotFinalNames := CONCAT(CONCAT(_NotFinalNames, ', '), Name);
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Name" Id="{2801ce61-39a9-4109-8621-2fc2fa85c6b6}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
+      <Get Name="Get" Id="{e7e29e38-246f-4901-bc44-042893e44680}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Name := 'Device sources';
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{158cb11b-d26a-479c-8bc2-bebef980beb6}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{428a8075-6a87-40ea-b295-78a1cea1da50}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasFault := _IsOnMachine AND _NotFinalCount > 0;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{b53d9a1b-9674-444f-92e0-382c5b28911b}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{ff55fe03-c039-462d-bb89-10b82e575e47}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF HasFault THEN
+    FaultText := CONCAT('Not final hardware: ', _NotFinalNames);
+ELSE
+    FaultText := '';
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="NotFinalDevices" Id="{70d9c4e2-997d-4b99-9043-8feae373cf66}">
+      <Declaration><![CDATA[PROPERTY PUBLIC NotFinalDevices : STRING(255)]]></Declaration>
+      <Get Name="Get" Id="{8cfc2eca-0657-487b-8b80-4af77d2befe5}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[NotFinalDevices := _NotFinalNames;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="NotFinalCount" Id="{d154facf-767b-4c4b-96d3-b0f059226c59}">
+      <Declaration><![CDATA[PROPERTY PUBLIC NotFinalCount : DINT]]></Declaration>
+      <Get Name="Get" Id="{5f6d15aa-c349-4627-809b-ffe0d6dd37d5}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[NotFinalCount := _NotFinalCount;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

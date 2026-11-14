@@ -1,18 +1,13 @@
 {attribute 'qualified_only'}
 VAR_GLOBAL
     // From the HMI
-    StartButton          : BOOL;
-    StopButton           : BOOL;
-    ResetButton          : BOOL;
+    StartButton      : BOOL;
+    StopButton       : BOOL;
+    ResetButton      : BOOL;
 
     // To the HMI
-    LineState            : E_LineState;
-    IsStopping           : BOOL;
-    FaultText            : STRING;
-    SimulatedDevices     : STRING(255);     // empty when every device is real
-    IsFillValveSimulated : BOOL;
-    IsBottleLevelSimulated : BOOL;
-    IsLiftSimulated      : BOOL;
-    IsSlideSimulated     : BOOL;
-    IsGripperSimulated   : BOOL;
+    LineState        : E_LineState;
+    IsStopping       : BOOL;
+    FaultText        : STRING;
+    NotFinalDevices  : STRING(255);         // every device that isn't the machine's own; empty on the machine
 END_VAR

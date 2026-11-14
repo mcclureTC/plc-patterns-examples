@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="TankModel" Id="{7e8c216c-b31a-4907-b57b-4834cc757592}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK TankModel IMPLEMENTS I_LevelSensor, I_Cyclic
+VAR
+    _Inflow       : I_FillValve;
+    _Outflow      : I_FillValve;
+    _Clock        : I_Clock;
+    _FillRate     : REAL;              // percent per second, inflow valve open
+    _DrainRate    : REAL;              // percent per second, outflow valve open
+    _Level        : REAL;
+    _LastNow      : LTIME;
+    _IsStarted    : BOOL;
+    _IsConfigured : BOOL;
+END_VAR
+(*
+    TankModel
+
+    A simulated tank: the level rises while the inflow valve is open and
+    falls while the outflow valve is open. Reads both through
+    I_FillValve, so it works with simulated and real valves alike.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_LevelSensor" Id="{e48ccde3-8e33-40cf-b794-3ff9a0b9226a}" />
+    <Folder Name="I_Cyclic" Id="{274ca545-2b3a-41d7-bd13-1d203c19f46f}" />
+    <Method Name="FB_init" Id="{e5a14c5e-8902-4b9d-a9a3-be269beee06f}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Inflow       : I_FillValve;
+    Outflow      : I_FillValve;
+    Clock        : I_Clock;
+    FillRate     : REAL;
+    DrainRate    : REAL;
+    StartLevel   : REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Inflow := Inflow;
+_Outflow := Outflow;
+_Clock := Clock;
+_FillRate := FillRate;
+_DrainRate := DrainRate;
+_Level := StartLevel;
+_IsConfigured := Inflow <> 0 AND Outflow <> 0 AND Clock <> 0;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{2209cb73-3c89-40af-8de4-a1f136a4f553}" FolderPath="I_Cyclic\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+VAR
+    Now     : LTIME;
+    Seconds : REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _IsConfigured THEN
+    RETURN;
+END_IF
+Now := _Clock.Now;
+IF NOT _IsStarted THEN
+    _IsStarted := TRUE;
+    _LastNow := Now;
+    RETURN;
+END_IF
+Seconds := LREAL_TO_REAL(LTIME_TO_LREAL(Now - _LastNow) / 1.0E9);   // LTIME counts nanoseconds
+_LastNow := Now;
+IF _Inflow.IsOpen THEN
+    _Level := _Level + _FillRate * Seconds;
+END_IF
+IF _Outflow.IsOpen THEN
+    _Level := _Level - _DrainRate * Seconds;
+END_IF
+_Level := LIMIT(0.0, _Level, 100.0);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Level" Id="{916f4c91-a9f9-486c-b73b-270876f42d1f}" FolderPath="I_LevelSensor\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Level : REAL]]></Declaration>
+      <Get Name="Get" Id="{35e616ea-8034-4aea-8855-2ffe9047b042}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Level := _Level;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsValid" Id="{44624941-7c11-482a-8e63-0b5e383fdeb1}" FolderPath="I_LevelSensor\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsValid : BOOL]]></Declaration>
+      <Get Name="Get" Id="{626b1e44-dcb7-45ae-aea6-ffa8ab07c505}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsValid := _IsConfigured;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

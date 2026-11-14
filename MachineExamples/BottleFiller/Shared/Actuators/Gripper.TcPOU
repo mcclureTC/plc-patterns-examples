@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="Gripper" Id="{e369f192-108e-4261-a7f1-08323536df9e}" SpecialFunc="None">
+  <POU Name="Gripper" Id="{20dc8eb9-9225-4de5-a77d-3bf4e45ca98b}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Gripper EXTENDS SingleSolenoidCylinder
 (*
     Gripper
@@ -12,9 +12,9 @@
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Property Name="SettleTime" Id="{e77254f6-8ef9-49e9-bb1a-86b4f464ba83}">
+    <Property Name="SettleTime" Id="{c0158ccc-6ed3-45d1-b206-b70b5ceb6cd6}">
       <Declaration><![CDATA[PROPERTY PROTECTED SettleTime : TIME]]></Declaration>
-      <Get Name="Get" Id="{4fad48bb-a361-4320-90eb-c59cbf9e0a3b}">
+      <Get Name="Get" Id="{70fd461b-1a68-43a8-b78c-3401cff58c6c}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

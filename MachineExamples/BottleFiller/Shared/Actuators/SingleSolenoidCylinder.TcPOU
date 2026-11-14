@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="SingleSolenoidCylinder" Id="{fb339b65-fb48-43cf-8772-7c0a31923916}" SpecialFunc="None">
+  <POU Name="SingleSolenoidCylinder" Id="{9610f7f6-417e-49aa-a504-132e889d69c2}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK SingleSolenoidCylinder EXTENDS ActuatorBase
 VAR
     _Solenoid        : REFERENCE TO BOOL;
@@ -17,7 +17,7 @@ END_VAR
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Method Name="FB_init" Id="{41c0be4d-0028-4627-9ef4-5429730f3eff}">
+    <Method Name="FB_init" Id="{8cf15dde-2733-4f49-b7d8-4ca428e47aef}">
       <Declaration><![CDATA[METHOD FB_init : BOOL
 VAR_INPUT
     bInitRetains    : BOOL;
@@ -37,7 +37,7 @@ Configure(Name := Name, MoveTimeout := MoveTimeout);
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="IsWired" Id="{7a51b93f-639a-4295-bc12-ed2d7832ded6}">
+    <Method Name="IsWired" Id="{4849c915-07d7-42fc-9d03-fde1775a6d48}">
       <Declaration><![CDATA[METHOD PROTECTED IsWired : BOOL
 ]]></Declaration>
       <Implementation>
@@ -45,7 +45,7 @@ Configure(Name := Name, MoveTimeout := MoveTimeout);
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="DriveOutputs" Id="{68a7a2cd-3317-4452-b1e7-0fca454248c1}">
+    <Method Name="DriveOutputs" Id="{e070fba6-06e9-4fe5-b145-92f150b1f980}">
       <Declaration><![CDATA[METHOD PROTECTED DriveOutputs
 VAR_INPUT
     Target : E_ActuatorTarget;
@@ -56,7 +56,7 @@ END_VAR
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="IsAtPosition" Id="{ffc89229-b2e5-4cbb-bd8d-c0ff6f5316e2}">
+    <Method Name="IsAtPosition" Id="{6488f2df-2cb5-439c-a2af-aa5aee8e373b}">
       <Declaration><![CDATA[METHOD PROTECTED IsAtPosition : BOOL
 VAR_INPUT
     Position : E_ActuatorTarget;
@@ -74,7 +74,7 @@ END_CASE
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="DriveSafe" Id="{8383670b-c803-436d-93de-315e8aba2cee}">
+    <Method Name="DriveSafe" Id="{dc00bd41-8f51-4fd3-929b-f2373061473e}">
       <Declaration><![CDATA[METHOD PROTECTED DriveSafe
 ]]></Declaration>
       <Implementation>

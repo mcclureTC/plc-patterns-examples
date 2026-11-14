@@ -1,0 +1,32 @@
+FUNCTION_BLOCK SimulatedValveTakesItsTravelTimeTest EXTENDS TestBase
+VAR
+    _Clock : FakeClock;
+    _Valve : SimulatedValve(Name := 'Test valve', Clock := _Clock, TravelTime := LTIME#400MS);
+END_VAR
+(*
+    SimulatedValveTakesItsTravelTimeTest
+
+    The simulated valve reports neither end while it travels, reaches open
+    after its travel time, and doesn't move at all while stuck.
+*)
+
+METHOD PUBLIC Run
+Check(_Valve.IsClosed AND NOT _Valve.IsOpen, 'it starts closed');
+
+_Valve.Open();
+_Valve.CyclicLogic();
+Check(NOT _Valve.IsClosed AND NOT _Valve.IsOpen, 'it reports neither end while it travels');
+
+_Clock.Advance(Duration := LTIME#399MS);
+_Valve.CyclicLogic();
+Check(NOT _Valve.IsOpen, 'it is not open before its travel time');
+
+_Clock.Advance(Duration := LTIME#1MS);
+_Valve.CyclicLogic();
+Check(_Valve.IsOpen, 'it is open after its travel time');
+
+_Valve.SetStuck(IsStuck := TRUE);
+_Valve.Close();
+_Clock.Advance(Duration := LTIME#1S);
+_Valve.CyclicLogic();
+Check(_Valve.IsOpen, 'a stuck valve ignores Close()');

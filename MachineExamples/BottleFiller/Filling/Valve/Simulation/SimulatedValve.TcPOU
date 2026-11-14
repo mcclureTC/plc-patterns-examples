@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="SimulatedValve" Id="{50001f74-fdd6-4023-9443-28f93956bd61}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SimulatedValve IMPLEMENTS I_FillValve, I_Cyclic
+VAR
+    _Name         : STRING(32);
+    _Clock        : I_Clock;
+    _TravelTime   : LTIME;
+    _IsCommanded  : BOOL;              // TRUE: open requested
+    _IsStuck      : BOOL;
+    _IsAtOpen     : BOOL;
+    _IsAtClosed   : BOOL := TRUE;
+    _MoveStart    : LTIME;
+    _IsMoving     : BOOL;
+    _IsConfigured : BOOL;
+END_VAR
+(*
+    SimulatedValve
+
+    Stands in for a valve with position feedback. Reaches the commanded
+    position after TravelTime, with neither end reported while it moves.
+    SetStuck() makes it stop answering commands, as a sticking valve does.
+    Has no I/O.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_FillValve" Id="{39ace360-a19f-444c-8b46-74e312015064}" />
+    <Folder Name="I_Diagnosable" Id="{6bdeec5e-a873-4a84-8a60-1505c70f6ac2}" />
+    <Folder Name="I_Cyclic" Id="{1adbcab9-caf9-4d33-a28a-fb94d523ff33}" />
+    <Method Name="FB_init" Id="{573dd73e-ff25-408d-830d-627946ceb760}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Name         : STRING(32);
+    Clock        : I_Clock;
+    TravelTime   : LTIME;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Name := Name;
+_Clock := Clock;
+_TravelTime := TravelTime;
+_IsConfigured := Clock <> 0;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Open" Id="{be3bd5c9-a304-4e1d-b694-5ba0ebb77cc5}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Open
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsCommanded := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Close" Id="{8ef05bd0-9ef9-495b-91aa-6b4d2cb1211c}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Close
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsCommanded := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetStuck" Id="{9780cfa5-ae8d-4c18-bc8a-734a5e7d0b85}">
+      <Declaration><![CDATA[METHOD PUBLIC SetStuck
+VAR_INPUT
+    IsStuck : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsStuck := IsStuck;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{d169821f-5edd-4d6b-b58a-f54406e4d385}" FolderPath="I_Cyclic\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _IsConfigured OR _IsStuck THEN
+    RETURN;
+END_IF
+IF _IsCommanded <> _IsAtOpen AND NOT _IsMoving THEN
+    _IsMoving := TRUE;                 // a new command: leave the end position
+    _MoveStart := _Clock.Now;
+    _IsAtOpen := FALSE;
+    _IsAtClosed := FALSE;
+END_IF
+IF _IsMoving AND_THEN _Clock.Now - _MoveStart >= _TravelTime THEN
+    _IsMoving := FALSE;
+    _IsAtOpen := _IsCommanded;
+    _IsAtClosed := NOT _IsCommanded;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsOpen" Id="{401f1036-a01d-4bbc-a6f2-b8c9aae2efab}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsOpen : BOOL]]></Declaration>
+      <Get Name="Get" Id="{20edcc6d-c550-4669-aea1-784ba0aad3ab}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsOpen := _IsAtOpen;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsClosed" Id="{82ebd267-6267-4dcd-b2b9-b2714623ed67}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsClosed : BOOL]]></Declaration>
+      <Get Name="Get" Id="{6e603605-20f8-4a79-a181-526ba2782219}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsClosed := _IsAtClosed;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Name" Id="{47186d54-ed5b-4137-ab87-0163d556528c}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
+      <Get Name="Get" Id="{077bf48f-4d56-42cc-a599-a68436ebbd4a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Name := _Name;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{53cdd4eb-11e2-4542-9190-0a61c515d2fc}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{3b6a8322-167e-4cc7-9394-9ca87ee0520d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasFault := NOT _IsConfigured;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{de07335c-7968-4fa5-a76f-1c5b7c1a3943}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{765de1ea-0d49-4ee8-be7f-19ac3c5e2ef9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[FaultText := SEL(_IsConfigured, 'Simulated valve has no clock', '');
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

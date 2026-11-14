@@ -1,6 +1,6 @@
 FUNCTION_BLOCK SolenoidValve IMPLEMENTS I_FillValve, I_Resettable, I_Cyclic
 VAR
-    _Name          : STRING(32);
+    _Name          : STRING(32) := 'Solenoid valve';
     _Output        : REFERENCE TO BOOL;
     _OpenFeedback  : REFERENCE TO BOOL;
     _FaultDelay    : TIME;
@@ -13,19 +13,17 @@ END_VAR
 
     Drives one solenoid valve and checks its open-feedback switch. A fault
     is reported while the feedback has disagreed with the command for
-    longer than FaultDelay.
+    longer than FaultDelay. Name can be set while wiring.
 *)
 
 METHOD FB_init : BOOL
 VAR_INPUT
     bInitRetains : BOOL;
     bInCopyCode  : BOOL;
-    Name         : STRING(32);
     Output       : REFERENCE TO BOOL;
     OpenFeedback : REFERENCE TO BOOL;
     FaultDelay   : TIME;
 END_VAR
-_Name := Name;
 _Output REF= Output;
 _OpenFeedback REF= OpenFeedback;
 _FaultDelay := FaultDelay;
@@ -61,10 +59,11 @@ GET:
 IF NOT _IsConfigured THEN
     FaultText := 'I/O not wired';
 ELSIF _MismatchTimer.Q THEN
-    FaultText := 'Feedback does not match the command';
+    FaultText := 'No feedback';
 ELSE
     FaultText := '';
 END_IF
 
 PROPERTY PUBLIC Name : STRING
 GET: Name := _Name;
+SET: _Name := Name;

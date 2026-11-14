@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_DeviceSource" Id="{b096ec68-9663-4a3e-ad72-29f71a6e691f}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE E_DeviceSource :
+(
+    Undefined       := 0,
+    FinalHardware   := 1,
+    SimilarHardware := 2,
+    Simulation      := 3,
+    Test            := 4
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

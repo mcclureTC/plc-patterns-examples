@@ -1,0 +1,3 @@
+INTERFACE I_Clock EXTENDS __SYSTEM.IQueryInterface
+
+PROPERTY Now : LTIME   // GET

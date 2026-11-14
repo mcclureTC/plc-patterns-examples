@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_Command" Id="{29473e76-5199-4e36-a57b-a37652cd3842}">
+    <Declaration><![CDATA[INTERFACE I_Command EXTENDS __SYSTEM.IQueryInterface
+]]></Declaration>
+    <Property Name="Name" Id="{25e4bd72-c820-4d87-8f51-7b122676f94f}">
+      <Declaration><![CDATA[PROPERTY Name : STRING]]></Declaration>
+      <Get Name="Get" Id="{22289915-dc68-4e45-ba5d-50f4af520d36}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="Start" Id="{b6eef522-7b39-4616-b7bf-249a96fed718}">
+      <Declaration><![CDATA[METHOD Start                        // begin; ignored while Busy
+]]></Declaration>
+    </Method>
+    <Method Name="CyclicLogic" Id="{d805bab4-0487-43a9-9eb0-80f67816a437}">
+      <Declaration><![CDATA[METHOD CyclicLogic                  // one scan of work; called by the invoker while Busy
+]]></Declaration>
+    </Method>
+    <Method Name="Abort" Id="{9112db3f-9099-425c-b5e1-d17c99fb80be}">
+      <Declaration><![CDATA[METHOD Abort                        // stop now and leave everything safe; ends in Error
+]]></Declaration>
+    </Method>
+    <Property Name="State" Id="{6e898771-d9a3-4aa8-a8f4-cda2441b31e8}">
+      <Declaration><![CDATA[PROPERTY State : E_OperationState]]></Declaration>
+      <Get Name="Get" Id="{b82f1d1b-ad01-4432-b20f-f2e5acfed8b3}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{53cebdc8-f1a8-4901-9535-f49a11edbf1c}">
+      <Declaration><![CDATA[PROPERTY FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{69cbdda1-2212-48d0-8ac8-0de7344de6ad}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

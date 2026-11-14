@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="FillingModule" Id="{82891a28-b7e4-4b49-a14a-4b021699e96a}" SpecialFunc="None">
+  <POU Name="FillingModule" Id="{569bb606-a72e-450c-a7cc-2ddcce2d9e16}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FillingModule EXTENDS ModuleGroup IMPLEMENTS I_EquipmentModule
 VAR
-    _Sequence         : REFERENCE TO FillSequence;
+    _Fill             : REFERENCE TO FillSequence;
+    _Dose             : I_Command;
     _IsCycleRequested : BOOL;
+    _IsFilling        : BOOL;
+    _IsDosing         : BOOL;
+    _HasDoseFault     : BOOL;
+    _DoseFault        : STRING;
     _IsConfigured     : BOOL;
 END_VAR
 (*
     FillingModule
 
-    The filling station. Runs its FillSequence, then its devices. One
-    StartCycle() fills one bottle. It has a fault while any of its devices
-    has one, or while the sequence has stopped with an error; Reset()
-    resets both.
+    The filling station. One cycle measures one dose: the fill sequence
+    fills the dosing tank to its target level, then the dose command
+    drains it into the bottle below. Runs both before its valves. It has
+    a fault while a valve has one, the fill sequence has stopped with an
+    error, or the last dose ended in Error; Reset() clears all three.
 *)
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Folder Name="I_EquipmentModule" Id="{77204942-61cd-4b3a-ace4-7cb9bd3aa0e4}" />
-    <Folder Name="I_Diagnosable" Id="{1e83f0f9-afc6-410b-b457-89e18a4dcd92}" />
-    <Folder Name="I_Resettable" Id="{6e35057f-3f52-48e4-a7fc-ab28d985717d}" />
-    <Method Name="FB_init" Id="{23c9ed63-073d-430f-a703-d2412c98d0cb}">
+    <Folder Name="I_EquipmentModule" Id="{e7d69ba2-092b-45df-b079-ee50e76aba72}" />
+    <Folder Name="I_Diagnosable" Id="{c0e836ea-02fd-4071-b78b-724402a9cde3}" />
+    <Folder Name="I_Resettable" Id="{4f9c1b3d-ded0-4f18-ac38-21948a2bce96}" />
+    <Method Name="FB_init" Id="{1252bf98-d5f3-4fa3-bbeb-d5acc8a613f4}">
       <Declaration><![CDATA[METHOD FB_init : BOOL
 VAR_INPUT
     bInitRetains : BOOL;
     bInCopyCode  : BOOL;
     Name         : STRING(32);                  // for EquipmentGroup
-    Sequence     : REFERENCE TO FillSequence;
+    Fill         : REFERENCE TO FillSequence;
+    Dose         : I_Command;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[_Sequence REF= Sequence;
-_IsConfigured := __ISVALIDREF(Sequence);
+        <ST><![CDATA[_Fill REF= Fill;
+_Dose := Dose;
+_IsConfigured := __ISVALIDREF(Fill) AND Dose <> 0;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="StartCycle" Id="{b54919d4-ed99-4a40-b63a-8ed28dc96500}" FolderPath="I_EquipmentModule\">
+    <Method Name="StartCycle" Id="{1f26a62c-adbb-4719-8ad0-37864c272eb2}" FolderPath="I_EquipmentModule\">
       <Declaration><![CDATA[METHOD PUBLIC StartCycle
 ]]></Declaration>
       <Implementation>
@@ -45,49 +53,78 @@ _IsConfigured := __ISVALIDREF(Sequence);
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="BeforeChildren" Id="{79d1e698-cc6f-4600-b05d-e5ef00bf4ff9}">
+    <Method Name="BeforeChildren" Id="{d956a250-4eff-4d23-8cb7-d08981cf28e5}">
       <Declaration><![CDATA[METHOD PROTECTED BeforeChildren
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF NOT _IsConfigured THEN
     RETURN;
 END_IF
-IF _IsCycleRequested
-   AND (_Sequence.CurrentStep = E_FillStep.Idle OR _Sequence.CurrentStep = E_FillStep.Done) THEN
-    _Sequence.Start();
+
+// A new cycle starts with the fill, once the station is free
+IF _IsCycleRequested AND NOT _IsFilling AND NOT _IsDosing
+   AND (_Fill.CurrentStep = E_FillStep.Idle OR _Fill.CurrentStep = E_FillStep.Done) THEN
+    _Fill.Start();
+    _IsFilling := TRUE;
     _IsCycleRequested := FALSE;
 END_IF
-_Sequence.CyclicLogic();                        // the sequence decides; the valve acts after it
+_Fill.CyclicLogic();
+
+// The tank is at its level: dose it into the bottle
+IF _IsFilling AND _Fill.IsDone THEN
+    _IsFilling := FALSE;
+    _Dose.Start();
+    _IsDosing := TRUE;
+END_IF
+IF _IsDosing THEN
+    _Dose.CyclicLogic();
+    IF _Dose.State = E_OperationState.Error THEN
+        _HasDoseFault := TRUE;
+        _DoseFault := _Dose.FaultText;
+        _IsDosing := FALSE;
+    ELSIF _Dose.State = E_OperationState.Done THEN
+        _IsDosing := FALSE;
+    END_IF
+END_IF
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Reset" Id="{a1f2e1e4-f9da-4e59-9339-cb4bc3f1aaa2}" FolderPath="I_Resettable\">
+    <Method Name="Reset" Id="{2deb6410-590e-4338-b57e-0e526355480d}" FolderPath="I_Resettable\">
       <Declaration><![CDATA[METHOD PUBLIC Reset
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[SUPER^.Reset();                                 // the devices
-IF _IsConfigured THEN
-    _Sequence.Reset();
+        <ST><![CDATA[SUPER^.Reset();                                 // the valves
+IF NOT _IsConfigured THEN
+    RETURN;
+END_IF
+_Fill.Reset();
+IF _IsDosing THEN
+    _Dose.Abort();                              // closes the drain valve
 END_IF
 _IsCycleRequested := FALSE;
+_IsFilling := FALSE;
+_IsDosing := FALSE;
+_HasDoseFault := FALSE;
+_DoseFault := '';
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="IsCycleDone" Id="{2422762a-57c4-48dc-a964-898ef31b0b50}" FolderPath="I_EquipmentModule\">
+    <Property Name="IsCycleDone" Id="{3859f42a-225e-4fcb-8630-ede6fda7372c}" FolderPath="I_EquipmentModule\">
       <Declaration><![CDATA[PROPERTY PUBLIC IsCycleDone : BOOL]]></Declaration>
-      <Get Name="Get" Id="{ca89378b-9b97-4621-ae13-c78bda08c374}">
+      <Get Name="Get" Id="{346a61ed-0143-4239-8f17-3222dfc6c96f}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[IsCycleDone := _IsConfigured AND_THEN (NOT _IsCycleRequested AND _Sequence.IsDone);
+          <ST><![CDATA[IsCycleDone := _IsConfigured AND_THEN (NOT _IsCycleRequested AND NOT _IsFilling AND NOT _IsDosing
+                                             AND _Dose.State = E_OperationState.Done);
 ]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Property Name="HasFault" Id="{43d48042-aa6e-47ba-86bf-a9bae2e03a29}" FolderPath="I_Diagnosable\">
+    <Property Name="HasFault" Id="{73153566-d6a1-4657-b43e-a5dddeac9217}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
-      <Get Name="Get" Id="{b0866940-3abd-4505-99ed-bb6eb2f2931b}">
+      <Get Name="Get" Id="{779495ae-9317-4017-ac13-db13937ac880}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -95,25 +132,27 @@ END_VAR
           <ST><![CDATA[IF NOT _IsConfigured THEN
     HasFault := TRUE;
 ELSE
-    HasFault := SUPER^.HasFault OR _Sequence.HasError;
+    HasFault := SUPER^.HasFault OR _Fill.HasError OR _HasDoseFault;
 END_IF
 ]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Property Name="FaultText" Id="{dded78d1-2722-4bbf-a5cc-3881861eaa6b}" FolderPath="I_Diagnosable\">
+    <Property Name="FaultText" Id="{aee96d7d-650c-43f8-879e-a537533e5a51}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
-      <Get Name="Get" Id="{8c6e9ddd-44cc-45c6-8fe6-f8c618ff61ce}">
+      <Get Name="Get" Id="{585c260f-651e-462b-8013-f47bb3f034d6}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
           <ST><![CDATA[IF NOT _IsConfigured THEN
-    FaultText := 'Fill sequence not wired';
+    FaultText := 'Filling station not wired';
 ELSIF SUPER^.HasFault THEN
-    FaultText := SUPER^.FaultText;              // the device, by name
-ELSIF _Sequence.HasError THEN
-    FaultText := 'Fill sequence stopped; reset to continue';
+    FaultText := SUPER^.FaultText;              // the valve, by name
+ELSIF _Fill.HasError THEN
+    FaultText := 'Fill stopped; reset to continue';
+ELSIF _HasDoseFault THEN
+    FaultText := CONCAT('Dose: ', _DoseFault);
 ELSE
     FaultText := '';
 END_IF

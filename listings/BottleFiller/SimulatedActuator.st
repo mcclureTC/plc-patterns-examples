@@ -8,13 +8,10 @@ END_VAR
 (*
     SimulatedActuator
 
-    An actuator with no hardware: it reaches the commanded end TravelTime
-    after the move starts. The supervision is ActuatorBase's, unchanged, so
-    a move that never arrives faults exactly as a real one would.
-
-    Failure hook: SetStuck(TRUE) stops it moving, so the move times out.
-    Starts at neither end: the first move of each direction takes its
-    travel time.
+    Stands in for a cylinder or gripper with end sensors. Reaches the
+    commanded end TravelTime after the move starts. The supervision is
+    ActuatorBase's, unchanged, so a move that never arrives faults exactly
+    as a real one would. SetStuck() stops it moving. Has no I/O.
 *)
 
 METHOD FB_init : BOOL
@@ -55,6 +52,3 @@ IsAtPosition := Position <> E_ActuatorTarget.None AND Position = _DrivenTarget A
 
 METHOD PROTECTED DriveSafe
 _Travel(IN := FALSE);
-
-PROPERTY PUBLIC IsStuck : BOOL
-GET: IsStuck := _IsStuck;

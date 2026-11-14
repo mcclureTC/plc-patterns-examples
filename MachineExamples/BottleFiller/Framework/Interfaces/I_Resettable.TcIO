@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <Itf Name="I_Resettable" Id="{46a438b8-497e-4354-819f-e5b6f15902e4}">
+  <Itf Name="I_Resettable" Id="{19d8f4e6-7b9d-4ea2-919b-db452d7c134c}">
     <Declaration><![CDATA[INTERFACE I_Resettable EXTENDS __SYSTEM.IQueryInterface
 ]]></Declaration>
-    <Method Name="Reset" Id="{da000d0e-1bcd-4223-a406-e23d9ab31d2a}">
+    <Method Name="Reset" Id="{8def40b3-3d7b-4e44-9e8b-d4bea9900221}">
       <Declaration><![CDATA[METHOD Reset
 ]]></Declaration>
     </Method>

@@ -1,12 +1,14 @@
 {attribute 'qualified_only'}
 VAR_GLOBAL
     // Filling station
-    FillValveCoil  AT %Q* : BOOL;
-    FillValveOpen  AT %I* : BOOL;
-    BottleLevel    AT %I* : DINT;           // level sensor process data, 0.1 mm
-    BottleSensorOk AT %I* : BOOL;           // the sensor's valid bit; see the project document
+    TankValveCoil  AT %Q* : BOOL;
+    TankValveOpen  AT %I* : BOOL;
+    DrainValveCoil AT %Q* : BOOL;
+    DrainValveOpen AT %I* : BOOL;
+    TankLevel      AT %I* : DINT;           // level sensor process data, 0.1 mm
+    TankSensorOk   AT %I* : BOOL;           // the sensor's valid bit; see the project document
 
-    // Transfer station
+    // Pick-and-place station
     LiftValve      AT %Q* : BOOL;
     LiftDown       AT %I* : BOOL;
     LiftUp         AT %I* : BOOL;

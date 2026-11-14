@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="ActuatorBase" Id="{9d91214a-37e8-4dd8-a6c4-77a51c453dfa}" SpecialFunc="None">
+  <POU Name="ActuatorBase" Id="{3e83db22-6fc6-43e6-9531-0792a1f7e6e2}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT ActuatorBase IMPLEMENTS I_Actuator, I_Cyclic
 VAR
     _Name         : STRING(32);
@@ -26,11 +26,11 @@ END_VAR
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Folder Name="I_Actuator" Id="{38e3b8bd-c8b0-4fa6-8f97-faff425325d2}" />
-    <Folder Name="I_Diagnosable" Id="{55f89a45-41c8-4ca3-8306-eddc0d09d3cb}" />
-    <Folder Name="I_Resettable" Id="{b9d6e925-70f3-4370-b7b8-0f5c652bb778}" />
-    <Folder Name="I_Cyclic" Id="{4401908b-35e2-4d60-99fa-f841d2835c0f}" />
-    <Method Name="CyclicLogic" Id="{9c6b3799-1a2c-4eb2-b97e-cc5ce2171fd7}" FolderPath="I_Cyclic\">
+    <Folder Name="I_Actuator" Id="{d2a23e62-a42c-490f-8b2f-01614c085ae0}" />
+    <Folder Name="I_Diagnosable" Id="{c331d548-7d01-4669-88e1-7c12b8790ab4}" />
+    <Folder Name="I_Resettable" Id="{cd0c58f9-1b07-4718-afd3-ecedbb502416}" />
+    <Folder Name="I_Cyclic" Id="{92675993-b21d-482a-91a5-51211caec467}" />
+    <Method Name="CyclicLogic" Id="{c859b226-8178-4a98-a057-e16fbb9979a3}" FolderPath="I_Cyclic\">
       <Declaration><![CDATA[METHOD PUBLIC FINAL CyclicLogic
 ]]></Declaration>
       <Implementation>
@@ -65,14 +65,14 @@ _SettleTimer(IN := _IsInPosition, PT := SettleTime);
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="IsWired" Id="{bd7025df-ddb9-40de-8a0b-10aee7740b27}">
+    <Method Name="IsWired" Id="{02ba69a4-cbd9-49ae-8815-290902652f4d}">
       <Declaration><![CDATA[METHOD PROTECTED ABSTRACT IsWired : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
-    <Method Name="DriveOutputs" Id="{05a2952e-0300-4761-a60e-7256e61f29a6}">
+    <Method Name="DriveOutputs" Id="{5ea62337-b928-49cb-8707-d822012b71d2}">
       <Declaration><![CDATA[METHOD PROTECTED ABSTRACT DriveOutputs
 VAR_INPUT
     Target : E_ActuatorTarget;
@@ -82,7 +82,7 @@ END_VAR
         <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
-    <Method Name="IsAtPosition" Id="{7c2c3b56-f529-4504-9f00-f85efac8acf8}">
+    <Method Name="IsAtPosition" Id="{ae63f93c-4cd7-41a2-b1de-88f7fb17a129}">
       <Declaration><![CDATA[METHOD PROTECTED ABSTRACT IsAtPosition : BOOL
 VAR_INPUT
     Position : E_ActuatorTarget;
@@ -92,14 +92,26 @@ END_VAR
         <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
-    <Method Name="DriveSafe" Id="{2d901236-2d64-4643-8c02-5e69813dfdf0}">
+    <Method Name="DriveSafe" Id="{4d68234d-8c5b-4b11-ae0e-0d8405af253d}">
       <Declaration><![CDATA[METHOD PROTECTED ABSTRACT DriveSafe
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Configure" Id="{81a82bcc-6783-4280-a0df-afec38470988}">
+    <Property Name="SettleTime" Id="{6ccf9a7a-7bfc-46b1-b7c5-b223c45d6904}">
+      <Declaration><![CDATA[PROPERTY PROTECTED SettleTime : TIME]]></Declaration>
+      <Get Name="Get" Id="{4c68d280-1a0c-4dda-a029-cad38252ac69}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[SettleTime := T#0S;           // most actuators report as soon as the sensor confirms
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Configure" Id="{3b6ff6e9-0326-4f04-a7f2-d30900c96c19}">
       <Declaration><![CDATA[METHOD PROTECTED Configure
 VAR_INPUT
     Name        : STRING(32);
@@ -112,7 +124,7 @@ _MoveTimeout := MoveTimeout;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Extend" Id="{b0fe1cc4-931a-48f9-babb-cfd4a9d19df1}" FolderPath="I_Actuator\">
+    <Method Name="Extend" Id="{f3c1da36-07a5-4401-a839-794ea2315d0f}" FolderPath="I_Actuator\">
       <Declaration><![CDATA[METHOD PUBLIC Extend
 ]]></Declaration>
       <Implementation>
@@ -120,7 +132,7 @@ _MoveTimeout := MoveTimeout;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Retract" Id="{b00301e4-c23a-4efe-bb4e-903ca4cdc4cf}" FolderPath="I_Actuator\">
+    <Method Name="Retract" Id="{ef1f00c9-5afe-4392-bb3e-098b983fb120}" FolderPath="I_Actuator\">
       <Declaration><![CDATA[METHOD PUBLIC Retract
 ]]></Declaration>
       <Implementation>
@@ -128,7 +140,7 @@ _MoveTimeout := MoveTimeout;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="MoveTo" Id="{3685eb9d-30d9-47ea-ac91-fbf9efeec5ff}">
+    <Method Name="MoveTo" Id="{4aba87ed-07a7-4f68-9950-6d1e8d182c2b}">
       <Declaration><![CDATA[METHOD PRIVATE MoveTo
 VAR_INPUT
     Target : E_ActuatorTarget;
@@ -144,7 +156,7 @@ _SettleTimer(IN := FALSE);
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Reset" Id="{389f4ea0-8cf7-44a3-967a-0ddb322f40c7}" FolderPath="I_Resettable\">
+    <Method Name="Reset" Id="{92fda48d-abab-416d-a213-af20d7aea0bd}" FolderPath="I_Resettable\">
       <Declaration><![CDATA[METHOD PUBLIC Reset
 ]]></Declaration>
       <Implementation>
@@ -156,21 +168,9 @@ _SettleTimer(IN := FALSE);
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="SettleTime" Id="{e9730e0d-fe02-4b49-b374-ec0d800d2181}">
-      <Declaration><![CDATA[PROPERTY PROTECTED SettleTime : TIME]]></Declaration>
-      <Get Name="Get" Id="{f30b6620-a246-4876-a4b9-11769657437e}">
-        <Declaration><![CDATA[VAR
-END_VAR
-]]></Declaration>
-        <Implementation>
-          <ST><![CDATA[SettleTime := T#0S;           // most actuators report as soon as the sensor confirms
-]]></ST>
-        </Implementation>
-      </Get>
-    </Property>
-    <Property Name="IsExtended" Id="{0f580865-9f10-4154-9b07-c30b025ff87c}" FolderPath="I_Actuator\">
+    <Property Name="IsExtended" Id="{fecc5cef-b3a5-43c7-b8a9-181de633be2f}" FolderPath="I_Actuator\">
       <Declaration><![CDATA[PROPERTY PUBLIC IsExtended : BOOL]]></Declaration>
-      <Get Name="Get" Id="{70e3c045-4a64-4a0b-94f3-37363e38f1c5}">
+      <Get Name="Get" Id="{f2782987-c939-478f-8789-22bf5b7824dd}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -180,9 +180,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="IsRetracted" Id="{e4265b08-0248-4f27-a454-25774acf5097}" FolderPath="I_Actuator\">
+    <Property Name="IsRetracted" Id="{794c6d14-2e91-4ff6-888b-55ba5a5eb758}" FolderPath="I_Actuator\">
       <Declaration><![CDATA[PROPERTY PUBLIC IsRetracted : BOOL]]></Declaration>
-      <Get Name="Get" Id="{66305fa0-1181-4c32-8528-d40104c4dc3e}">
+      <Get Name="Get" Id="{68a50f1c-832a-4e21-adec-fac1ad3feaba}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -192,9 +192,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="HasFault" Id="{ea70bcf7-3726-4f75-bc86-db4aadd8c740}" FolderPath="I_Diagnosable\">
+    <Property Name="HasFault" Id="{e11a851f-76c4-4214-be14-61c4b5475848}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
-      <Get Name="Get" Id="{f4c6f1db-d6e0-4035-b770-d71a54bf704d}">
+      <Get Name="Get" Id="{41083042-326e-497d-99df-a7dd5fc5e68b}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -204,9 +204,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="FaultText" Id="{a770c4de-058a-46be-85b2-1bddf0645120}" FolderPath="I_Diagnosable\">
+    <Property Name="FaultText" Id="{4430a890-9722-4300-bc0f-54f50fa9c06a}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
-      <Get Name="Get" Id="{6ff391ab-3892-4615-ad97-4446abf1f1de}">
+      <Get Name="Get" Id="{78986b8d-1eff-4ca3-8ce3-c050cf3f5fd5}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -216,9 +216,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="Name" Id="{6fb225ce-5d6f-4fc7-9ccf-9f2c449995e2}" FolderPath="I_Diagnosable\">
+    <Property Name="Name" Id="{09936066-7da8-45f4-8804-2b14ae2867f2}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
-      <Get Name="Get" Id="{1dd11277-b727-47b8-a5c4-fba48cc804b5}">
+      <Get Name="Get" Id="{5d1a40de-57c1-49cc-a222-51247d48ce6c}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

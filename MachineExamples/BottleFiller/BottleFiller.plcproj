@@ -3,21 +3,24 @@
   <PropertyGroup>
     <FileVersion>1.0.0.0</FileVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{f48bc889-2946-4e87-aaf4-b76730a4ca07}</ProjectGuid>
+    <ProjectGuid>{fe55804b-022b-48bd-b90a-4b79ce4cfe92}</ProjectGuid>
     <SubObjectsSortedByName>True</SubObjectsSortedByName>
     <DownloadApplicationInfo>true</DownloadApplicationInfo>
     <WriteProductVersion>true</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
     <Name>BottleFiller</Name>
-    <ProgramVersion>3.1.4026.26</ProgramVersion>
-    <Application>{66eae6d7-1e72-4663-abd3-b85ab41a30ff}</Application>
-    <TypeSystem>{581f735d-6c0a-40b0-b884-d3740886a551}</TypeSystem>
-    <Implicit_Task_Info>{aada63fe-00c4-492f-82e7-2fa9e06d429f}</Implicit_Task_Info>
-    <Implicit_KindOfTask>{776bd2f9-bbf9-4ff4-917c-31a3f6e6318e}</Implicit_KindOfTask>
-    <Implicit_Jitter_Distribution>{ff1e59b6-6eae-4481-ae3b-e7c1c72c1d49}</Implicit_Jitter_Distribution>
-    <LibraryReferences>{d60c6202-91d7-47cb-9972-68f5bf75a447}</LibraryReferences>
+    <ProgramVersion>3.1.4026.21</ProgramVersion>
+    <Application>{22db369e-1d5e-4236-a586-55e443f76881}</Application>
+    <TypeSystem>{c379d658-0cb5-4591-886c-b19602b9e9a5}</TypeSystem>
+    <Implicit_Task_Info>{36e93efa-42fb-42b9-9f61-490f7b1f9246}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{bf0e2748-30d9-40e9-9c04-fe8c578b6486}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{f42529a8-7309-4148-8366-54131dacb887}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{2c410ef1-53eb-4aee-b5c0-94d2b31648eb}</LibraryReferences>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Filling\DrainTankCommand.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Filling\E_FillStep.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -36,7 +39,7 @@
     <Compile Include="Filling\Level\LevelSensorRouter.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Filling\Level\Simulation\SimulatedBottleLevel.TcPOU">
+    <Compile Include="Filling\Level\Simulation\TankModel.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Filling\Valve\FillValveRouter.TcPOU">
@@ -45,13 +48,22 @@
     <Compile Include="Filling\Valve\I_FillValve.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Filling\Valve\Simulation\SimulatedFillValve.TcPOU">
+    <Compile Include="Filling\Valve\Simulation\SimulatedValve.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Filling\Valve\SolenoidValve.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Framework\E_OperationState.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Framework\EquipmentGroup.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Framework\Interfaces\I_Clock.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Framework\Interfaces\I_Command.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Framework\Interfaces\I_Cyclic.TcIO">
@@ -69,6 +81,9 @@
     <Compile Include="Framework\ModuleGroup.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Framework\TaskClock.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GVLs\GVL_Hmi.TcGVL">
       <SubType>Code</SubType>
     </Compile>
@@ -82,6 +97,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PickAndPlace\E_PickStep.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PickAndPlace\PickAndPlaceModule.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PickAndPlace\PickAndPlaceSequence.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
@@ -111,40 +135,31 @@
     <Compile Include="Shared\Actuators\SingleSolenoidCylinder.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Site\E_DeviceSource.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Site\GVL_Sim.TcGVL">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Site\GVL_Site.TcGVL">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Site\ST_SiteSwitches.TcDUT">
+    <Compile Include="Site\SimulationCheck.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Site\SiteCheck.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tests\ActuatorRouterTest.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tests\Doubles\FakeActuator.TcPOU">
+    <Compile Include="Tests\Doubles\FakeClock.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\Doubles\FakeEquipmentModule.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Tests\Doubles\FakeFillValve.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tests\Doubles\FakeLevelSensor.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tests\FillValveRouterTest.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tests\LevelSensorRouterTest.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Tests\LineRunsStopsAndFaultsTest.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\SimulatedValveTakesItsTravelTimeTest.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\SimulationCheckTest.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\TestBase.TcPOU">
@@ -153,20 +168,8 @@
     <Compile Include="Tests\TestMain.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Transfer\E_PickStep.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Transfer\PickAndPlaceSequence.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Transfer\TransferModule.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BottleFiller.tmc">
-      <SubType>Content</SubType>
-    </None>
     <Content Include="Documentation\BottleFiller.md">
       <SubType>Content</SubType>
     </Content>
@@ -177,10 +180,10 @@
     <Folder Include="Framework" />
     <Folder Include="GVLs" />
     <Folder Include="Line" />
+    <Folder Include="PickAndPlace" />
     <Folder Include="Shared" />
     <Folder Include="Site" />
     <Folder Include="Tests" />
-    <Folder Include="Transfer" />
     <Folder Include="Filling\Level" />
     <Folder Include="Filling\Valve" />
     <Folder Include="Framework\Interfaces" />
@@ -195,10 +198,6 @@
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
     </PlaceholderReference>
-    <PlaceholderReference Include="Tc2_System">
-      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
-      <Namespace>Tc2_System</Namespace>
-    </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc3_Module</Namespace>
@@ -208,8 +207,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-        <Data>
-          <o xml:space="preserve" t="OptionKey">
+  <Data>
+    <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{29BD8D0C-3586-4548-BB48-497B9A01693F}</v>
@@ -273,14 +272,14 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-        </Data>
-        <TypeList>
-          <Type n="Boolean">System.Boolean</Type>
-          <Type n="Hashtable">System.Collections.Hashtable</Type>
-          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-          <Type n="String">System.String</Type>
-        </TypeList>
-      </XmlArchive>
+  </Data>
+  <TypeList>
+    <Type n="Boolean">System.Boolean</Type>
+    <Type n="Hashtable">System.Collections.Hashtable</Type>
+    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+    <Type n="String">System.String</Type>
+  </TypeList>
+</XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

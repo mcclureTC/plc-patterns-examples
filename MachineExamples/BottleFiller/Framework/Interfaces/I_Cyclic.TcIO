@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <Itf Name="I_Cyclic" Id="{34254ef2-4436-46b5-a1e7-729652f48943}">
+  <Itf Name="I_Cyclic" Id="{fb9a048c-fd1e-40db-a4c6-d3970535ecf2}">
     <Declaration><![CDATA[INTERFACE I_Cyclic EXTENDS __SYSTEM.IQueryInterface
+
+// Called once per scan, by whoever owns this block's place in the call order.
 ]]></Declaration>
-    <Method Name="CyclicLogic" Id="{d71c2671-2d83-4e4f-a87d-519830fc75bf}">
-      <Declaration><![CDATA[METHOD CyclicLogic                  // once per scan, by whoever owns this block's place in the call order
+    <Method Name="CyclicLogic" Id="{91ff5771-17cc-4645-ac61-cbceda3c18ac}">
+      <Declaration><![CDATA[METHOD CyclicLogic
 ]]></Declaration>
     </Method>
   </Itf>

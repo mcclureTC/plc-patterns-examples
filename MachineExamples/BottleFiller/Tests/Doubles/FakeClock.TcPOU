@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="FakeClock" Id="{dbeb2fd8-2ceb-4323-8f60-c29685dc72ca}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FakeClock IMPLEMENTS I_Clock
+VAR
+    _Now : LTIME;
+END_VAR
+(*
+    FakeClock
+
+    Stands still until the test moves it.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_Clock" Id="{ea1665d9-4a76-4cb0-a728-2a6225e5e28e}" />
+    <Method Name="Advance" Id="{d9debce1-9baf-4e9c-999e-cf2dc60fd16d}">
+      <Declaration><![CDATA[METHOD PUBLIC Advance
+VAR_INPUT
+    Duration : LTIME;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Now := _Now + Duration;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Now" Id="{770be202-787b-425e-8f10-82f6dd7ba35b}" FolderPath="I_Clock\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Now : LTIME]]></Declaration>
+      <Get Name="Get" Id="{7745eb38-7646-4093-b4ce-16f51637c250}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Now := _Now;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

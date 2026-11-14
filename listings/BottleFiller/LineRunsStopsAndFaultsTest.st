@@ -1,7 +1,7 @@
 FUNCTION_BLOCK LineRunsStopsAndFaultsTest EXTENDS TestBase
 VAR
     _Filler   : FakeEquipmentModule(Name := 'Filling');
-    _Transfer : FakeEquipmentModule(Name := 'Transfer');
+    _Transfer : FakeEquipmentModule(Name := 'Pick and place');
     _Line     : LineModule(Name := 'Line 1', Filler := _Filler, Transfer := _Transfer);
     _IsWired  : BOOL;
 END_VAR

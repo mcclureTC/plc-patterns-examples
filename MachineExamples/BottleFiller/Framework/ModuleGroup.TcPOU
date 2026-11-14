@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="ModuleGroup" Id="{65045b5f-d709-4f6c-bb98-173d3b161f0f}" SpecialFunc="None">
+  <POU Name="ModuleGroup" Id="{fa52b04a-1597-41b2-964c-82819b8d2af8}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK ModuleGroup EXTENDS EquipmentGroup IMPLEMENTS I_Cyclic
 VAR
     _Cyclics : ARRAY[0..MaxChildren - 1] OF I_Cyclic;
@@ -17,8 +17,8 @@ END_VAR
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Folder Name="I_Cyclic" Id="{54659eeb-139c-49e2-b047-dc74112881e7}" />
-    <Method Name="AddChild" Id="{994ba994-b460-4c42-aca2-a337234d3e22}">
+    <Folder Name="I_Cyclic" Id="{f27b1504-c8b1-47e4-95fd-e69c6fa98599}" />
+    <Method Name="AddChild" Id="{b084ecc5-2c16-43c7-8521-4bd175a74bc5}">
       <Declaration><![CDATA[METHOD PUBLIC AddChild : BOOL
 VAR_INPUT
     Child : I_Diagnosable;
@@ -39,7 +39,7 @@ AddChild := TRUE;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="CyclicLogic" Id="{d97d0510-3360-4b50-ab9c-e1d97b52dabb}" FolderPath="I_Cyclic\">
+    <Method Name="CyclicLogic" Id="{8835ee07-d9e4-4a29-a321-5187496f430d}" FolderPath="I_Cyclic\">
       <Declaration><![CDATA[METHOD PUBLIC FINAL CyclicLogic
 VAR
     i : DINT;
@@ -56,14 +56,14 @@ AfterChildren();
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="BeforeChildren" Id="{c757a140-6070-442c-b6a7-0885388c103c}">
+    <Method Name="BeforeChildren" Id="{bc68d170-c847-43f8-9471-5a2b7826c648}">
       <Declaration><![CDATA[METHOD PROTECTED BeforeChildren      // decide what the children should do this scan
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
-    <Method Name="AfterChildren" Id="{759bbe27-6c50-4941-b340-4a3bcbfb2a86}">
+    <Method Name="AfterChildren" Id="{e391214e-3bed-4ff4-89c6-2cd45ab234cb}">
       <Declaration><![CDATA[METHOD PROTECTED AfterChildren       // read what they reported this scan
 ]]></Declaration>
       <Implementation>

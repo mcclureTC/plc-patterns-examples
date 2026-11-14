@@ -18,17 +18,6 @@ END_VAR
     seen during the next CyclicLogic() call.
 *)
 
-METHOD FB_init : BOOL
-VAR_INPUT
-    bInitRetains : BOOL;
-    bInCopyCode  : BOOL;
-    LevelSensor  : I_LevelSensor;
-    FillValve    : I_FillValve;
-END_VAR
-_LevelSensor := LevelSensor;
-_FillValve := FillValve;
-_IsConfigured := LevelSensor <> 0 AND FillValve <> 0;
-
 METHOD PUBLIC Start
 _IsStartRequested := TRUE;
 
@@ -98,3 +87,14 @@ GET: IsDone := _CurrentStep = E_FillStep.Done;
 
 PROPERTY PUBLIC HasError : BOOL
 GET: HasError := _CurrentStep = E_FillStep.Error;
+
+METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    LevelSensor  : I_LevelSensor;
+    FillValve    : I_FillValve;
+END_VAR
+_LevelSensor := LevelSensor;
+_FillValve := FillValve;
+_IsConfigured := LevelSensor <> 0 AND FillValve <> 0;   // stored: FB_init's return value is ignored

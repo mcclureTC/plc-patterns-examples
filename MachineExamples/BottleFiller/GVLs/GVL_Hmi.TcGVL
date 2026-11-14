@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <GVL Name="GVL_Hmi" Id="{341396bd-a59b-4c2b-b46c-43ddd4d3d29d}">
+  <GVL Name="GVL_Hmi" Id="{a79523ad-c0a9-4eed-a9d2-eca58564faad}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
     // From the HMI
-    StartButton          : BOOL;
-    StopButton           : BOOL;
-    ResetButton          : BOOL;
+    StartButton      : BOOL;
+    StopButton       : BOOL;
+    ResetButton      : BOOL;
 
     // To the HMI
-    LineState            : E_LineState;
-    IsStopping           : BOOL;
-    FaultText            : STRING;
-    SimulatedDevices     : STRING(255);     // empty when every device is real
-    IsFillValveSimulated : BOOL;
-    IsBottleLevelSimulated : BOOL;
-    IsLiftSimulated      : BOOL;
-    IsSlideSimulated     : BOOL;
-    IsGripperSimulated   : BOOL;
+    LineState        : E_LineState;
+    IsStopping       : BOOL;
+    FaultText        : STRING;
+    NotFinalDevices  : STRING(255);         // every device that isn't the machine's own; empty on the machine
 END_VAR
 ]]></Declaration>
   </GVL>

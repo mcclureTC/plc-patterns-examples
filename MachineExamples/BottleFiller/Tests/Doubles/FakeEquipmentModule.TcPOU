@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="FakeEquipmentModule" Id="{2955b10d-6ceb-4adc-9fce-9ababfec0bfb}" SpecialFunc="None">
+  <POU Name="FakeEquipmentModule" Id="{0564d15c-4cf7-41b0-829f-0b0099e89ca1}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FakeEquipmentModule IMPLEMENTS I_EquipmentModule, I_Resettable
 VAR
     _Name        : STRING(32);
@@ -20,10 +20,10 @@ END_VAR
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Folder Name="I_EquipmentModule" Id="{bcfe0df1-ec1d-4858-94c1-ad8aecccdfbc}" />
-    <Folder Name="I_Diagnosable" Id="{23e14fac-634e-4ca9-a52f-7a08ff95eb20}" />
-    <Folder Name="I_Resettable" Id="{04f6b7a4-42a7-4545-82ef-83c9ef3dc110}" />
-    <Method Name="FB_init" Id="{b6b6ebf4-2506-4ba9-b710-7fb80e018c33}">
+    <Folder Name="I_EquipmentModule" Id="{b49c8b61-c918-40eb-a7fe-a1b60026dd81}" />
+    <Folder Name="I_Diagnosable" Id="{058fb314-fb9e-4870-8ff8-7b97f548f1ed}" />
+    <Folder Name="I_Resettable" Id="{739097b6-a694-48fe-bc0b-89b4aaa2c369}" />
+    <Method Name="FB_init" Id="{ce7e99dd-deaa-408e-b31a-ac7298db17a3}">
       <Declaration><![CDATA[METHOD FB_init : BOOL
 VAR_INPUT
     bInitRetains : BOOL;
@@ -36,7 +36,7 @@ END_VAR
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="StartCycle" Id="{b6bd3460-d333-4af2-bb96-f12c830723e1}" FolderPath="I_EquipmentModule\">
+    <Method Name="StartCycle" Id="{26c7068c-b635-40e3-a072-7c1a05ac5c70}" FolderPath="I_EquipmentModule\">
       <Declaration><![CDATA[METHOD PUBLIC StartCycle
 ]]></Declaration>
       <Implementation>
@@ -45,7 +45,7 @@ _IsCycleDone := FALSE;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Reset" Id="{9a70f26c-ee0e-4fe8-9be8-d12a2dcb5772}" FolderPath="I_Resettable\">
+    <Method Name="Reset" Id="{4614b972-af5f-4050-84ce-562b1230192c}" FolderPath="I_Resettable\">
       <Declaration><![CDATA[METHOD PUBLIC Reset
 ]]></Declaration>
       <Implementation>
@@ -53,7 +53,7 @@ _IsCycleDone := FALSE;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="FinishCycle" Id="{9ce9c12f-a6c0-4852-a37b-31ca71fa68f9}">
+    <Method Name="FinishCycle" Id="{a869f64b-8240-45e4-8120-d02a1f1caa52}">
       <Declaration><![CDATA[METHOD PUBLIC FinishCycle
 ]]></Declaration>
       <Implementation>
@@ -61,7 +61,7 @@ _IsCycleDone := FALSE;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="SetFault" Id="{0d50dd19-1d9b-4b6a-b9fb-cab083dce87c}">
+    <Method Name="SetFault" Id="{63eccac8-e3bd-4722-b21a-87777ff2bc86}">
       <Declaration><![CDATA[METHOD PUBLIC SetFault
 VAR_INPUT
     IsActive : BOOL;
@@ -72,9 +72,9 @@ END_VAR
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="Name" Id="{11aa703b-eeec-42dd-88a2-bc864212d408}" FolderPath="I_Diagnosable\">
+    <Property Name="Name" Id="{cd224d35-5dc7-47eb-9f5f-e8e3746d8111}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
-      <Get Name="Get" Id="{762a8dac-070b-4c34-81b1-868f5449dd14}">
+      <Get Name="Get" Id="{d5b44222-b3cb-49a7-b832-38b367e121a3}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -84,9 +84,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="HasFault" Id="{fd45e75f-5881-4410-b9af-d21ab720cb21}" FolderPath="I_Diagnosable\">
+    <Property Name="HasFault" Id="{7105ec90-07f0-4bb5-a902-e2b557336c7e}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
-      <Get Name="Get" Id="{ff3df7a2-220b-4523-99f6-7d37b0e41d09}">
+      <Get Name="Get" Id="{d876bab6-2db7-4b95-9d7a-5fc84d3ffda8}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -96,9 +96,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="FaultText" Id="{b0bbd7e9-16bc-443a-91b5-10693d7940fd}" FolderPath="I_Diagnosable\">
+    <Property Name="FaultText" Id="{483f7491-a889-4a2c-a984-4fa78d951d1b}" FolderPath="I_Diagnosable\">
       <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
-      <Get Name="Get" Id="{3eac4c17-eded-4cde-8315-4c1c2b9877eb}">
+      <Get Name="Get" Id="{ccdb1ea9-c74e-4572-b132-fdb301e4106e}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -112,9 +112,9 @@ END_IF
         </Implementation>
       </Get>
     </Property>
-    <Property Name="IsCycleDone" Id="{2804bc3d-b717-4671-81db-c6a4a170bcc7}" FolderPath="I_EquipmentModule\">
+    <Property Name="IsCycleDone" Id="{40b8f9ca-1605-489f-ba4e-7edfac876381}" FolderPath="I_EquipmentModule\">
       <Declaration><![CDATA[PROPERTY PUBLIC IsCycleDone : BOOL]]></Declaration>
-      <Get Name="Get" Id="{4ddf7807-c1c3-46a9-9bd4-b75a8e7a6120}">
+      <Get Name="Get" Id="{74d31ad7-fa9e-4fd1-9511-c0cbeec043b7}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -124,9 +124,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="StartCount" Id="{8b46515f-562b-43d7-9e75-33912ea5b101}">
+    <Property Name="StartCount" Id="{dcd0b3f3-ccca-45d4-95c8-fbb11f689cc9}">
       <Declaration><![CDATA[PROPERTY PUBLIC StartCount : DINT]]></Declaration>
-      <Get Name="Get" Id="{83acf31a-d8fd-4c03-ad3a-2cb6c077b927}">
+      <Get Name="Get" Id="{633b894a-c6d6-455b-a4d8-e65fbd68859d}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -136,9 +136,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="ResetCount" Id="{0340ffa1-2fd8-4f37-8f06-493babb20d0b}">
+    <Property Name="ResetCount" Id="{a6fe588c-7d76-44b4-8f9d-be5cb4d639cf}">
       <Declaration><![CDATA[PROPERTY PUBLIC ResetCount : DINT]]></Declaration>
-      <Get Name="Get" Id="{0c9f8603-53b6-46ee-b1ab-1aa5ed732446}">
+      <Get Name="Get" Id="{b63a8de0-9aad-4883-8786-650f602c3363}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

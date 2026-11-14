@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <DUT Name="E_LineState" Id="{75d9754b-4a2f-4204-ac0d-8d84b0beb31e}">
+  <DUT Name="E_LineState" Id="{56a82c92-05b6-4f4e-9811-e9a859d97f8b}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 {attribute 'strict'}
 {attribute 'to_string'}

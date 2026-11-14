@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="LineModule" Id="{62cab6e6-9e04-4fa3-8e93-a9298d90b181}" SpecialFunc="None">
+  <POU Name="LineModule" Id="{af7f9873-6eef-4792-929d-8b412e3c19b2}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK LineModule EXTENDS ModuleGroup
 VAR
     _Filler           : I_EquipmentModule;
@@ -26,7 +26,7 @@ END_VAR
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Method Name="FB_init" Id="{cf30e8e7-6d9a-4344-a37d-5f1e7183ab83}">
+    <Method Name="FB_init" Id="{a3e47bab-b4fc-4fdc-ac0f-e91f9b4bf2d0}">
       <Declaration><![CDATA[METHOD FB_init : BOOL
 VAR_INPUT
     bInitRetains : BOOL;
@@ -43,7 +43,7 @@ _IsConfigured := Filler <> 0 AND Transfer <> 0;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Start" Id="{9901e0cc-ab41-4877-8495-b2acdaac1def}">
+    <Method Name="Start" Id="{b51082b5-7bf0-4ac5-985a-ceb9b9a57dfb}">
       <Declaration><![CDATA[METHOD PUBLIC Start
 ]]></Declaration>
       <Implementation>
@@ -52,7 +52,7 @@ _IsStopping := FALSE;                           // a start cancels a stop that h
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Stop" Id="{456472e9-e71d-4b4a-b2ad-de565a7bc205}">
+    <Method Name="Stop" Id="{cb6d3e2e-d34a-456d-b08f-3760254f7239}">
       <Declaration><![CDATA[METHOD PUBLIC Stop
 ]]></Declaration>
       <Implementation>
@@ -62,7 +62,7 @@ END_IF
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="BeforeChildren" Id="{302bfbdd-cc5e-4dd2-b9f1-928c8b9f4919}">
+    <Method Name="BeforeChildren" Id="{7e3d8405-7c71-40d1-a594-92fa05f9416f}">
       <Declaration><![CDATA[METHOD PROTECTED BeforeChildren
 ]]></Declaration>
       <Implementation>
@@ -111,9 +111,9 @@ _IsStartRequested := FALSE;
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="State" Id="{00ecd315-e32d-4573-beb8-532c4d2cd862}">
+    <Property Name="State" Id="{e74d5d94-e787-4e84-a09f-db1dfef1e31e}">
       <Declaration><![CDATA[PROPERTY PUBLIC State : E_LineState]]></Declaration>
-      <Get Name="Get" Id="{709c4ad2-5585-429a-ae17-28e0c65a88e4}">
+      <Get Name="Get" Id="{80350595-bef7-4fe2-8874-a5730eaac171}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -123,9 +123,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="IsStopping" Id="{2841533f-da21-49c3-ba6f-4979f9058fb9}">
+    <Property Name="IsStopping" Id="{9766d7e4-70ee-4d9d-9910-50212f3d24a6}">
       <Declaration><![CDATA[PROPERTY PUBLIC IsStopping : BOOL]]></Declaration>
-      <Get Name="Get" Id="{ee116164-8811-4894-a77a-32ece4fac818}">
+      <Get Name="Get" Id="{dac68dd1-70a6-447a-9797-d7392f6a4a26}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

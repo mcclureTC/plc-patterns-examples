@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="FillSequence" Id="{33be856c-0070-4a40-8562-847ba5ee9bf6}" SpecialFunc="None">
+  <POU Name="FillSequence" Id="{92b33afb-d567-4e27-8f7b-75100cf47966}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FillSequence
 VAR
     _LevelSensor      : I_LevelSensor;
@@ -24,23 +24,7 @@ END_VAR
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Method Name="FB_init" Id="{13d5f557-41a8-46b0-80ea-467607da238e}">
-      <Declaration><![CDATA[METHOD FB_init : BOOL
-VAR_INPUT
-    bInitRetains : BOOL;
-    bInCopyCode  : BOOL;
-    LevelSensor  : I_LevelSensor;
-    FillValve    : I_FillValve;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[_LevelSensor := LevelSensor;
-_FillValve := FillValve;
-_IsConfigured := LevelSensor <> 0 AND FillValve <> 0;
-]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="Start" Id="{7cbfd568-9560-44e1-89fb-e31310a49282}">
+    <Method Name="Start" Id="{a0ca7d85-b9a0-4ae2-a81c-d2cb2be96728}">
       <Declaration><![CDATA[METHOD PUBLIC Start
 ]]></Declaration>
       <Implementation>
@@ -48,7 +32,7 @@ _IsConfigured := LevelSensor <> 0 AND FillValve <> 0;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Reset" Id="{cfa85490-4313-4b51-ad78-bfb81ba12665}">
+    <Method Name="Reset" Id="{54039c1d-5cee-43a8-957d-d8559e480502}">
       <Declaration><![CDATA[METHOD PUBLIC Reset
 ]]></Declaration>
       <Implementation>
@@ -56,7 +40,7 @@ _IsConfigured := LevelSensor <> 0 AND FillValve <> 0;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="CyclicLogic" Id="{c9e91c8e-7b6e-472c-99e9-c1c92305d532}">
+    <Method Name="CyclicLogic" Id="{9bf792a6-4ba8-42c9-8b15-2fde260bb80e}">
       <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
 ]]></Declaration>
       <Implementation>
@@ -106,9 +90,9 @@ _IsResetRequested := FALSE;
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="TargetLevel" Id="{376488f3-3b03-409d-822a-445236f74c11}">
+    <Property Name="TargetLevel" Id="{435c724b-19ed-4647-b1f8-b0e854d41da4}">
       <Declaration><![CDATA[PROPERTY PUBLIC TargetLevel : REAL]]></Declaration>
-      <Get Name="Get" Id="{49aadfc4-cf20-4e0d-990e-2479ca422016}">
+      <Get Name="Get" Id="{668b7bf1-850b-4c18-ab82-5c6cffb12ce4}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -117,7 +101,7 @@ END_VAR
 ]]></ST>
         </Implementation>
       </Get>
-      <Set Name="Set" Id="{08a665c0-347f-4a89-b217-4e104028c501}">
+      <Set Name="Set" Id="{21956a4a-cba6-4346-bfdd-d6650a4e6ea9}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -127,9 +111,9 @@ END_VAR
         </Implementation>
       </Set>
     </Property>
-    <Property Name="CurrentStep" Id="{e8e14b09-84f1-40b2-9aba-16c99b02d2d6}">
+    <Property Name="CurrentStep" Id="{3082776b-b121-44ab-84ed-94f89336af51}">
       <Declaration><![CDATA[PROPERTY PUBLIC CurrentStep : E_FillStep]]></Declaration>
-      <Get Name="Get" Id="{3165ce21-b2d4-439c-a366-a5a4f6fb4a8d}">
+      <Get Name="Get" Id="{e686a673-a848-4a38-a7e3-d0f5a725f742}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -139,9 +123,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="IsBusy" Id="{c54d6c33-51d2-43ab-b5d9-21b9eaf11790}">
+    <Property Name="IsBusy" Id="{2d5bf083-d509-47d1-b765-e91387dacf87}">
       <Declaration><![CDATA[PROPERTY PUBLIC IsBusy : BOOL]]></Declaration>
-      <Get Name="Get" Id="{13394f33-7905-49e8-a711-c00cbb374822}">
+      <Get Name="Get" Id="{1f76769b-fbee-4757-86b4-2f62da0b9781}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -153,9 +137,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="IsDone" Id="{aa85685f-9ed7-4a6a-a31b-d9f64f372e32}">
+    <Property Name="IsDone" Id="{dedc9cc8-6b79-48ee-bdbf-4e43fb2ff01e}">
       <Declaration><![CDATA[PROPERTY PUBLIC IsDone : BOOL]]></Declaration>
-      <Get Name="Get" Id="{d010886e-7218-4b73-bd1b-67411fc343ec}">
+      <Get Name="Get" Id="{55bd4405-6b50-48f8-846c-f20f6a11174d}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -165,9 +149,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="HasError" Id="{d55fc806-2670-4f2f-a33b-41bdc2dca120}">
+    <Property Name="HasError" Id="{5f621a0e-8900-43f8-a157-b08e3cf60c84}">
       <Declaration><![CDATA[PROPERTY PUBLIC HasError : BOOL]]></Declaration>
-      <Get Name="Get" Id="{db5cada9-9a39-4a35-a36a-c521dbb1cfbf}">
+      <Get Name="Get" Id="{b01e3d23-e1ca-4c1c-a1e0-224071eda3b4}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -177,5 +161,21 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
+    <Method Name="FB_init" Id="{f6413a0a-711a-4faa-9f3a-ba0139e2d3e8}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    LevelSensor  : I_LevelSensor;
+    FillValve    : I_FillValve;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_LevelSensor := LevelSensor;
+_FillValve := FillValve;
+_IsConfigured := LevelSensor <> 0 AND FillValve <> 0;   // stored: FB_init's return value is ignored
+]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>

@@ -8,7 +8,7 @@ The pages on the site show the code that matters for each lesson. This repositor
 
 | Folder | What it is | Page |
 |---|---|---|
-| [BottleFiller](MachineExamples/BottleFiller) | A small machine built as a module tree: a machine module with a simple state machine, a filling station and a transfer station, five devices, each real or simulated, and tests. | [A bottle filler built as a module tree](https://mccluretc.github.io/MachineExamples/module-tree/) |
+| [BottleFiller](MachineExamples/BottleFiller) | A dosing bottle filler built only from blocks on the site's pages: equipment modules on a composite tree, a fill sequence and a dose command, six devices each real or simulated, and the pages' tests. | [A bottle filler built as a module tree](https://mccluretc.github.io/MachineExamples/module-tree/) |
 
 Each project has its own document in its `Documentation` folder: libraries, structure, simulation switches, and how to run it.
 
@@ -36,4 +36,4 @@ and commit the changed listings with the change. The `Listings up to date` workf
 
 ## Releases
 
-The site pins a release tag (`v0.1.0`, ...). A change here reaches the site only when a new tag is made and the site's `tools/examples.json` is moved to it.
+The site pins a release tag (`v0.2.0`, ...). A change here reaches the site only when a new tag is made and the site's `tools/examples.json` is moved to it.

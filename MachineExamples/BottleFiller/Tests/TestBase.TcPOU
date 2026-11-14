@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
-  <POU Name="TestBase" Id="{bbfacc1b-6edc-4e96-93b1-17ef295c77e2}" SpecialFunc="None">
+  <POU Name="TestBase" Id="{00d9475d-5935-4b0d-a71b-28a102aa94b4}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT TestBase
 VAR
     _CheckCount  : INT;
@@ -17,14 +17,14 @@ END_VAR
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Method Name="Run" Id="{610eac88-b82b-4045-8839-e1b39f435b34}">
+    <Method Name="Run" Id="{4c16e47f-57f9-412a-8ad0-d28ec9a619a6}">
       <Declaration><![CDATA[METHOD PUBLIC ABSTRACT Run
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Check" Id="{52c0f254-0892-4913-aba1-3f3ce84c4223}">
+    <Method Name="Check" Id="{c6242960-d1b8-4a18-be43-d329ebe3b52b}">
       <Declaration><![CDATA[METHOD PROTECTED Check
 VAR_INPUT
     Condition : BOOL;
@@ -40,9 +40,9 @@ END_IF
 ]]></ST>
       </Implementation>
     </Method>
-    <Property Name="HasPassed" Id="{3ae12a68-f97c-4c30-a9d5-8c7623a6a616}">
+    <Property Name="HasPassed" Id="{4e595662-ae47-4cfc-8a1c-27a0ca77691a}">
       <Declaration><![CDATA[PROPERTY PUBLIC HasPassed : BOOL]]></Declaration>
-      <Get Name="Get" Id="{37d841fc-b476-447c-a6bd-c90a87f48695}">
+      <Get Name="Get" Id="{fa494ea5-fe5b-44dd-ad83-4cc0bad07c3f}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -52,9 +52,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="FailedCount" Id="{b30a307b-8983-4716-a68b-40808f5c04b5}">
+    <Property Name="FailedCount" Id="{787a173b-d7bd-4af3-a47a-03a7371f1103}">
       <Declaration><![CDATA[PROPERTY PUBLIC FailedCount : INT]]></Declaration>
-      <Get Name="Get" Id="{a6c30978-732d-466d-b878-48b4b859ffdd}">
+      <Get Name="Get" Id="{2e6372e1-7eba-4f14-9c6c-b7cf27dfbd5a}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
@@ -64,9 +64,9 @@ END_VAR
         </Implementation>
       </Get>
     </Property>
-    <Property Name="LastFailure" Id="{690de6af-ac6a-4fb1-9b0d-0904c25e7b0e}">
+    <Property Name="LastFailure" Id="{0ae27779-fd5b-4f61-b1d2-44d4cb5fcf95}">
       <Declaration><![CDATA[PROPERTY PUBLIC LastFailure : STRING(255)]]></Declaration>
-      <Get Name="Get" Id="{48ac8d99-8ee5-4fbc-9440-6bb854f5bf81}">
+      <Get Name="Get" Id="{254a139e-d29a-4440-812a-ca0016b9e6d3}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

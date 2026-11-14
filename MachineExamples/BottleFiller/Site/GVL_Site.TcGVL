@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <GVL Name="GVL_Site" Id="{779b68ea-947e-4a2f-b8ba-93f6b8a61c80}">
+  <GVL Name="GVL_Site" Id="{b141aee6-0b32-4228-988f-5fdcd3572e2f}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
-VAR_GLOBAL
-    // Edited by hand for each site. A release never overwrites this file.
-    // Read at start-up only: a change takes effect after a PLC restart, and
-    // until then SiteCheck reports it as a fault.
-    Switches : ST_SiteSwitches := (UseFillValveHardware   := FALSE,
-                                   UseBottleLevelHardware := FALSE,
-                                   UseLiftHardware        := FALSE,
-                                   UseSlideHardware       := FALSE,
-                                   UseGripperHardware     := FALSE,
-                                   IsOnMachine            := FALSE);
+VAR_GLOBAL CONSTANT
+    // Edited for each controller; a release never overwrites this list.
+    // FinalHardware on the machine. As delivered, everything is simulated.
+    TankValveSource  : E_DeviceSource := E_DeviceSource.Simulation;
+    DrainValveSource : E_DeviceSource := E_DeviceSource.Simulation;
+    TankLevelSource  : E_DeviceSource := E_DeviceSource.Simulation;
+    LiftSource       : E_DeviceSource := E_DeviceSource.Simulation;
+    SlideSource      : E_DeviceSource := E_DeviceSource.Simulation;
+    GripperSource    : E_DeviceSource := E_DeviceSource.Simulation;
+    IsOnMachine      : BOOL := FALSE;   // TRUE on the real machine: anything not final is a fault
 END_VAR
 ]]></Declaration>
   </GVL>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="SimulationCheckTest" Id="{39bf96cf-7224-4477-8488-31cc405b48b4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SimulationCheckTest EXTENDS TestBase
+VAR
+    _OnDesk    : SimulationCheck(IsOnMachine := FALSE);
+    _OnMachine : SimulationCheck(IsOnMachine := TRUE);
+    _Ok        : BOOL;
+END_VAR
+(*
+    SimulationCheckTest
+
+    Every device that isn't final hardware is listed; only on the machine
+    is that a fault.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Run" Id="{40fb4c9f-60e9-49db-bfe9-91127415d229}">
+      <Declaration><![CDATA[METHOD PUBLIC Run
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Ok := _OnDesk.AddDevice(Name := 'Tank valve', Source := E_DeviceSource.Simulation);
+_Ok := _OnDesk.AddDevice(Name := 'Lift', Source := E_DeviceSource.FinalHardware) AND _Ok;
+_Ok := _OnDesk.AddDevice(Name := 'Tank level', Source := E_DeviceSource.SimilarHardware) AND _Ok;
+Check(_Ok, 'every device is accepted');
+Check(_OnDesk.NotFinalCount = 2 AND _OnDesk.NotFinalDevices = 'Tank valve, Tank level',
+      'the devices that are not final hardware are listed');
+Check(NOT _OnDesk.HasFault, 'on a desk, that is not a fault');
+
+_OnMachine.AddDevice(Name := 'Lift', Source := E_DeviceSource.FinalHardware);
+Check(NOT _OnMachine.HasFault, 'on the machine, final hardware is no fault');
+_OnMachine.AddDevice(Name := 'Tank valve', Source := E_DeviceSource.Simulation);
+Check(_OnMachine.HasFault, 'on the machine, a simulated device is a fault');
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

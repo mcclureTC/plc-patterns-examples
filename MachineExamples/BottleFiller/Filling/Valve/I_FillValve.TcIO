@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <Itf Name="I_FillValve" Id="{2cdff9a3-f541-4a28-9849-4a94234f787b}">
+  <Itf Name="I_FillValve" Id="{6afaa988-396f-4c42-8a97-f9acf02797c2}">
     <Declaration><![CDATA[INTERFACE I_FillValve EXTENDS I_Diagnosable
 ]]></Declaration>
-    <Method Name="Open" Id="{31b94c7e-1292-4ce9-aa65-513067d50963}">
+    <Method Name="Open" Id="{da2bbfd5-35f4-49e0-9d55-92f89caa1fc8}">
       <Declaration><![CDATA[METHOD Open
 ]]></Declaration>
     </Method>
-    <Method Name="Close" Id="{ec9419cd-6c6c-403d-ae9b-4f9a5b65533e}">
+    <Method Name="Close" Id="{4bfd4cfa-1844-48a5-8f63-1a336ab2f40f}">
       <Declaration><![CDATA[METHOD Close
 ]]></Declaration>
     </Method>
-    <Property Name="IsOpen" Id="{3ce84b92-cea5-4c3c-b3f9-6cc43c21030e}">
+    <Property Name="IsOpen" Id="{727a8224-d15f-4d6f-900e-b1d96dc0f499}">
       <Declaration><![CDATA[PROPERTY IsOpen : BOOL]]></Declaration>
-      <Get Name="Get" Id="{338e6685-58c9-42e9-bfe6-f1396dc73c6c}">
+      <Get Name="Get" Id="{05232500-5fb4-4dd3-a509-f963d50b260d}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>
       </Get>
     </Property>
-    <Property Name="IsClosed" Id="{7ad3b32c-4737-4a7c-9475-ab8392897caf}">
+    <Property Name="IsClosed" Id="{3460cd2c-b32d-46f0-a8bd-cda99bc392a6}">
       <Declaration><![CDATA[PROPERTY IsClosed : BOOL]]></Declaration>
-      <Get Name="Get" Id="{3c3dc4c8-bed9-4692-9c3f-26b6404e5ae7}">
+      <Get Name="Get" Id="{85f84552-2f09-410d-b45d-6e2cf4a62259}">
         <Declaration><![CDATA[VAR
 END_VAR
 ]]></Declaration>

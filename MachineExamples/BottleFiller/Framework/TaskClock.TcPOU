@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="TaskClock" Id="{127b444a-2faf-4805-87fe-306e855e3d32}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK TaskClock IMPLEMENTS I_Clock
+VAR
+    _CycleTime : LTIME;
+    _Now       : LTIME;
+END_VAR
+(*
+    TaskClock
+
+    Advances by the task's cycle time on every CyclicLogic() call. Call it
+    once per scan, first, before anything that reads Now.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_Clock" Id="{ff6b017d-3888-41ad-b166-15ca40743c4f}" />
+    <Method Name="FB_init" Id="{65383a1e-b57b-4b60-8f89-ed9987651a45}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    CycleTime    : LTIME;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_CycleTime := CycleTime;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{89cfb67d-8d40-49ad-97de-1de57097de11}">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Now := _Now + _CycleTime;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Now" Id="{13c12619-56cb-4b2e-9392-d5157bbd91fa}" FolderPath="I_Clock\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Now : LTIME]]></Declaration>
+      <Get Name="Get" Id="{a52d6d44-4eb2-4dc1-b477-242642a1cddc}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Now := _Now;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

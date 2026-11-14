@@ -79,7 +79,6 @@ METHOD PRIVATE DescribeFault : STRING
 VAR_INPUT
     Index : DINT;
 END_VAR
-DescribeFault := '';
 IF Index < _Count THEN
     DescribeFault := CONCAT(CONCAT(_Children[Index].Name, ': '), _Children[Index].FaultText);
 END_IF

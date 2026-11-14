@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="DrainTankCommand" Id="{1c3f8104-8751-42b4-b576-10ea1a98e4e2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK DrainTankCommand IMPLEMENTS I_Command
+VAR CONSTANT
+    EmptyLevel : REAL := 2.0;          // percent
+END_VAR
+VAR
+    _DrainValve   : I_FillValve;
+    _Level        : I_LevelSensor;
+    _Clock        : I_Clock;
+    _Timeout      : LTIME;
+    _StartedAt    : LTIME;
+    _State        : E_OperationState;
+    _FaultText    : STRING;
+    _IsConfigured : BOOL;
+END_VAR
+(*
+    DrainTankCommand
+
+    Opens the drain valve until the tank reads empty. Ends in Error if the
+    level sensor is invalid, the valve faults, or the tank isn't empty
+    within the timeout. Every ending closes the drain valve.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_Command" Id="{55941814-268c-45b5-ba38-8b19109e1ff3}" />
+    <Method Name="FB_init" Id="{01100fe3-4868-452d-909b-c3b5b52fbf6d}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    DrainValve   : I_FillValve;     // any on/off valve with feedback fits this contract
+    Level        : I_LevelSensor;
+    Clock        : I_Clock;
+    Timeout      : LTIME;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_DrainValve := DrainValve;
+_Level := Level;
+_Clock := Clock;
+_Timeout := Timeout;
+_IsConfigured := DrainValve <> 0 AND Level <> 0 AND Clock <> 0;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Start" Id="{6d748322-2473-4b73-af9f-2122494dbc50}" FolderPath="I_Command\">
+      <Declaration><![CDATA[METHOD PUBLIC Start
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _State = E_OperationState.Busy THEN
+    RETURN;
+END_IF
+IF NOT _IsConfigured THEN
+    _State := E_OperationState.Error;
+    _FaultText := 'Drain command not wired';
+    RETURN;
+END_IF
+_StartedAt := _Clock.Now;
+_FaultText := '';
+_State := E_OperationState.Busy;
+_DrainValve.Open();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{ae9b512d-fbbf-4e6e-a24f-d8dad54af67e}" FolderPath="I_Command\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _State <> E_OperationState.Busy THEN
+    RETURN;
+END_IF
+
+IF NOT _Level.IsValid THEN
+    Finish(Outcome := E_OperationState.Error, Text := 'Level sensor invalid');
+ELSIF _DrainValve.HasFault THEN
+    Finish(Outcome := E_OperationState.Error, Text := _DrainValve.FaultText);
+ELSIF _Level.Level <= EmptyLevel THEN
+    Finish(Outcome := E_OperationState.Done, Text := '');
+ELSIF _Clock.Now - _StartedAt >= _Timeout THEN
+    Finish(Outcome := E_OperationState.Error, Text := 'Tank did not empty in time');
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Abort" Id="{17cb45d3-7c41-47f6-9495-9774fcc9b86e}" FolderPath="I_Command\">
+      <Declaration><![CDATA[METHOD PUBLIC Abort
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _State = E_OperationState.Busy THEN
+    Finish(Outcome := E_OperationState.Error, Text := 'Aborted');
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Finish" Id="{84574530-ec99-4cf8-bb1f-e6538391ff67}">
+      <Declaration><![CDATA[METHOD PRIVATE Finish
+VAR_INPUT
+    Outcome : E_OperationState;
+    Text    : STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_DrainValve.Close();                 // every ending, good or bad, leaves the drain closed
+_State := Outcome;
+_FaultText := Text;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Name" Id="{a13ccdb4-de09-4f65-8468-fa6f6afe66b4}" FolderPath="I_Command\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
+      <Get Name="Get" Id="{1ee627f2-dbfd-463a-9536-fff31a871a51}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Name := 'Drain tank';
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="State" Id="{863af7e3-f04a-4e38-a86a-b6877227ef0e}" FolderPath="I_Command\">
+      <Declaration><![CDATA[PROPERTY PUBLIC State : E_OperationState]]></Declaration>
+      <Get Name="Get" Id="{706f9a27-7915-4b45-983c-1d5b3f587d68}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[State := _State;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{d21ed5d1-8c7e-4f8a-bcb4-d12ccc74487a}" FolderPath="I_Command\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{fadd6175-4bf4-47b7-8395-43e8706f2895}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[FaultText := _FaultText;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>
