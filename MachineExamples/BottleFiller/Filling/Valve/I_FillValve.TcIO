@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_FillValve" Id="{2cdff9a3-f541-4a28-9849-4a94234f787b}">
+    <Declaration><![CDATA[INTERFACE I_FillValve EXTENDS I_Diagnosable
+]]></Declaration>
+    <Method Name="Open" Id="{31b94c7e-1292-4ce9-aa65-513067d50963}">
+      <Declaration><![CDATA[METHOD Open
+]]></Declaration>
+    </Method>
+    <Method Name="Close" Id="{ec9419cd-6c6c-403d-ae9b-4f9a5b65533e}">
+      <Declaration><![CDATA[METHOD Close
+]]></Declaration>
+    </Method>
+    <Property Name="IsOpen" Id="{3ce84b92-cea5-4c3c-b3f9-6cc43c21030e}">
+      <Declaration><![CDATA[PROPERTY IsOpen : BOOL]]></Declaration>
+      <Get Name="Get" Id="{338e6685-58c9-42e9-bfe6-f1396dc73c6c}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="IsClosed" Id="{7ad3b32c-4737-4a7c-9475-ab8392897caf}">
+      <Declaration><![CDATA[PROPERTY IsClosed : BOOL]]></Declaration>
+      <Get Name="Get" Id="{3c3dc4c8-bed9-4692-9c3f-26b6404e5ae7}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

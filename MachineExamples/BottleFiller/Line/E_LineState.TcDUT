@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_LineState" Id="{75d9754b-4a2f-4204-ac0d-8d84b0beb31e}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE E_LineState :
+(
+    Stopped      := 0,
+    Filling      := 10,
+    Transferring := 20,
+    Faulted      := 900
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

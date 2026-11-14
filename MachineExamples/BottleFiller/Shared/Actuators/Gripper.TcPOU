@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="Gripper" Id="{e369f192-108e-4261-a7f1-08323536df9e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Gripper EXTENDS SingleSolenoidCylinder
+(*
+    Gripper
+
+    A single-solenoid gripper: Extend closes, Retract opens. After the closed
+    sensor confirms, the jaws need a moment to build full grip pressure.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="SettleTime" Id="{e77254f6-8ef9-49e9-bb1a-86b4f464ba83}">
+      <Declaration><![CDATA[PROPERTY PROTECTED SettleTime : TIME]]></Declaration>
+      <Get Name="Get" Id="{4fad48bb-a361-4320-90eb-c59cbf9e0a3b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[SettleTime := T#150MS;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

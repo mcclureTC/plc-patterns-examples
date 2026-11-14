@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="FieldbusLevelSensor" Id="{a64c050d-6ed1-4164-91a4-453fe244525c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FieldbusLevelSensor IMPLEMENTS I_LevelSensor
+VAR
+    _FieldbusLevel     : REFERENCE TO DINT;
+    _IsCommunicationOk : REFERENCE TO BOOL;
+    _TankHeight        : REAL;
+    _IsConfigured      : BOOL;
+END_VAR
+(*
+    FieldbusLevelSensor
+
+    A level sensor that reports its reading over a fieldbus, in 0.1 mm.
+    TankHeight is the height of the vessel it measures, here the bottle.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_LevelSensor" Id="{68321ff1-65c2-43ae-a542-995483ef2b1f}" />
+    <Method Name="FB_init" Id="{c9d1dfe9-ae7e-4eb3-ad22-4051d0561a04}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains      : BOOL;
+    bInCopyCode       : BOOL;
+    FieldbusLevel     : REFERENCE TO DINT;   // process data from the sensor, 0.1 mm
+    IsCommunicationOk : REFERENCE TO BOOL;
+    TankHeight        : REAL;                // mm
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_FieldbusLevel REF= FieldbusLevel;
+_IsCommunicationOk REF= IsCommunicationOk;
+_TankHeight := TankHeight;
+_IsConfigured := __ISVALIDREF(FieldbusLevel) AND __ISVALIDREF(IsCommunicationOk) AND TankHeight > 0.0;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsValid" Id="{96a914ac-4825-43cb-8b36-14b1977ca406}" FolderPath="I_LevelSensor\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsValid : BOOL]]></Declaration>
+      <Get Name="Get" Id="{f72d3d36-62c9-4fa4-b6f5-8a9bc33ecb4b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsValid := _IsConfigured AND_THEN _IsCommunicationOk;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Level" Id="{543a8994-aaa8-46f5-b23a-ef15fe98bc77}" FolderPath="I_LevelSensor\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Level : REAL]]></Declaration>
+      <Get Name="Get" Id="{d8ec979f-38a9-4f42-9853-5c37d0a25e80}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF IsValid THEN
+    Level := LIMIT(0.0, DINT_TO_REAL(_FieldbusLevel) / 10.0 / _TankHeight * 100.0, 100.0);
+ELSE
+    Level := 0.0;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Site" Id="{779b68ea-947e-4a2f-b8ba-93f6b8a61c80}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+    // Edited by hand for each site. A release never overwrites this file.
+    // Read at start-up only: a change takes effect after a PLC restart, and
+    // until then SiteCheck reports it as a fault.
+    Switches : ST_SiteSwitches := (UseFillValveHardware   := FALSE,
+                                   UseBottleLevelHardware := FALSE,
+                                   UseLiftHardware        := FALSE,
+                                   UseSlideHardware       := FALSE,
+                                   UseGripperHardware     := FALSE,
+                                   IsOnMachine            := FALSE);
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

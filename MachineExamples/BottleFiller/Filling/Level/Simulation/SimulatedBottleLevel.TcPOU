@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="SimulatedBottleLevel" Id="{068bbf53-9a65-4695-ae25-4cf4b8033a56}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SimulatedBottleLevel IMPLEMENTS I_LevelSensor, I_Cyclic
+VAR
+    _Valve         : I_FillValve;
+    _RisePerSecond : REAL;
+    _Level         : REAL;
+    _WasOpen       : BOOL;
+    _IsSignalLost  : BOOL;
+    _IsConfigured  : BOOL;
+END_VAR
+(*
+    SimulatedBottleLevel
+
+    A bottle level with no hardware: rises at RisePerSecond while the fill
+    valve is open. Each time the valve opens, a new, empty bottle is
+    assumed to be under the nozzle.
+
+    Failure hook: SetSignalLost(TRUE) makes the reading invalid.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_LevelSensor" Id="{bf5d34ed-2e25-40e5-ac18-46c6a91378c6}" />
+    <Folder Name="I_Cyclic" Id="{e6314a77-77a7-4f98-961e-a1e7d05f9bb1}" />
+    <Method Name="FB_init" Id="{d7e773c0-2d3d-4948-acce-5d8c7b882015}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains  : BOOL;
+    bInCopyCode   : BOOL;
+    Valve         : I_FillValve;
+    RisePerSecond : REAL;              // percent of the bottle per second
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Valve := Valve;
+_RisePerSecond := RisePerSecond;
+_IsConfigured := Valve <> 0;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetSignalLost" Id="{71e0daf2-cf48-445a-9d2b-894fc7e34353}">
+      <Declaration><![CDATA[METHOD PUBLIC SetSignalLost
+VAR_INPUT
+    IsLost : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsSignalLost := IsLost;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{376f95ac-abd7-4f49-b2e3-9d6c92988886}" FolderPath="I_Cyclic\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+VAR
+    IsOpen       : BOOL;
+    CycleSeconds : REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _IsConfigured THEN
+    RETURN;
+END_IF
+IsOpen := _Valve.IsOpen;
+IF IsOpen THEN
+    IF NOT _WasOpen THEN
+        _Level := 0.0;                               // a new bottle for every fill
+    END_IF
+    // CycleTime is in 100 ns units
+    CycleSeconds := UDINT_TO_REAL(_TaskInfo[GETCURTASKINDEXEX()].CycleTime) / 10000000.0;
+    _Level := MIN(_Level + _RisePerSecond * CycleSeconds, 100.0);
+END_IF
+_WasOpen := IsOpen;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Level" Id="{d73f98e3-1d13-4d47-a4f6-d3ecf79039a1}" FolderPath="I_LevelSensor\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Level : REAL]]></Declaration>
+      <Get Name="Get" Id="{a61f1de6-cc8d-46a6-871c-b8c7ceceb95b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF _IsSignalLost THEN
+    Level := 0.0;
+ELSE
+    Level := _Level;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsValid" Id="{15f41de2-2e77-48db-9395-c3eb626286d7}" FolderPath="I_LevelSensor\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsValid : BOOL]]></Declaration>
+      <Get Name="Get" Id="{e02a72d2-bd21-41b6-ad56-4fe508c7950e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsValid := _IsConfigured AND NOT _IsSignalLost;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsSignalLost" Id="{fd99ce8d-42cf-43f2-9c00-caa1c1cf3d7f}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsSignalLost : BOOL]]></Declaration>
+      <Get Name="Get" Id="{7e6cf163-0024-4fe9-b2a5-53d23998eb25}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsSignalLost := _IsSignalLost;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

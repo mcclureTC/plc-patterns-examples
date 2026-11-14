@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="SolenoidValve" Id="{1a6489ba-086e-4511-8958-84b92fabba45}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SolenoidValve IMPLEMENTS I_FillValve, I_Resettable, I_Cyclic
+VAR
+    _Name          : STRING(32);
+    _Output        : REFERENCE TO BOOL;
+    _OpenFeedback  : REFERENCE TO BOOL;
+    _FaultDelay    : TIME;
+    _Command       : BOOL;
+    _MismatchTimer : TON;
+    _IsConfigured  : BOOL;
+END_VAR
+(*
+    SolenoidValve
+
+    Drives one solenoid valve and checks its open-feedback switch. A fault
+    is reported while the feedback has disagreed with the command for
+    longer than FaultDelay.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_FillValve" Id="{2fe7d07a-7a43-4443-9d07-fad130028b5a}" />
+    <Folder Name="I_Diagnosable" Id="{3a017657-b47c-4e5f-87af-d1407c85078f}" />
+    <Folder Name="I_Resettable" Id="{0ce365bf-0a38-4164-8c0d-66cd22465847}" />
+    <Folder Name="I_Cyclic" Id="{05c30184-f5cc-4bff-a7c1-7379dec23e00}" />
+    <Method Name="FB_init" Id="{d0ee28f5-8f5d-4fce-a6f9-6283ecd43f0d}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Name         : STRING(32);
+    Output       : REFERENCE TO BOOL;
+    OpenFeedback : REFERENCE TO BOOL;
+    FaultDelay   : TIME;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Name := Name;
+_Output REF= Output;
+_OpenFeedback REF= OpenFeedback;
+_FaultDelay := FaultDelay;
+_IsConfigured := __ISVALIDREF(Output) AND __ISVALIDREF(OpenFeedback);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Open" Id="{df367f95-a7f5-4d0e-9cbf-61cb2684d155}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Open
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Command := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Close" Id="{91293b09-e747-4296-9d36-9c8352abec28}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Close
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Command := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{0eaed527-9d9e-42ab-bced-f745aa94ff63}" FolderPath="I_Cyclic\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _IsConfigured THEN
+    RETURN;
+END_IF
+_Output := _Command;
+_MismatchTimer(IN := _Command XOR _OpenFeedback, PT := _FaultDelay);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{997427e5-c76e-47fd-b32f-320fb695ac6c}" FolderPath="I_Resettable\">
+      <Declaration><![CDATA[METHOD PUBLIC Reset
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_MismatchTimer(IN := FALSE);                        // supervise again from now
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsOpen" Id="{e9465bfb-10c6-4f33-9a23-09bf50fd142d}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsOpen : BOOL]]></Declaration>
+      <Get Name="Get" Id="{4f479eb3-5c08-4fd5-b05f-8e233b296dcd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsOpen := _IsConfigured AND_THEN (_Command AND _OpenFeedback);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsClosed" Id="{c97e6247-78b5-4a31-8e96-e9f8da8b01a0}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsClosed : BOOL]]></Declaration>
+      <Get Name="Get" Id="{1d61ebef-59c5-4c17-816c-2c6bcdb45e2f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsClosed := _IsConfigured AND_THEN NOT (_Command OR _OpenFeedback);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{6f9ceaab-6ca9-407e-ae7b-78abe0c87ed7}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{e90c388c-d5a5-40c5-b312-e162865c5ad2}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasFault := NOT _IsConfigured OR _MismatchTimer.Q;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{1e5ad093-6400-42fc-b888-07e05ff88ca5}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{97ec2d33-a598-4f5c-bc56-abebc8368458}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF NOT _IsConfigured THEN
+    FaultText := 'I/O not wired';
+ELSIF _MismatchTimer.Q THEN
+    FaultText := 'Feedback does not match the command';
+ELSE
+    FaultText := '';
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Name" Id="{db49ba97-964a-4b6f-95f7-38d9503ca814}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
+      <Get Name="Get" Id="{68cd500f-5fc2-49f6-a3f9-f716d1b50e6f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Name := _Name;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

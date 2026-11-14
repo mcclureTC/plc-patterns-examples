@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Sim" Id="{9d7b0a80-3d24-4132-89ff-359b434e05df}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+    // Failure hooks for the simulated devices, set from the HMI or a watch
+    // window. Each one acts only while its device is simulated.
+    FillValveStuck        : BOOL;
+    BottleLevelSignalLost : BOOL;
+    LiftStuck             : BOOL;
+    SlideStuck            : BOOL;
+    GripperStuck          : BOOL;
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

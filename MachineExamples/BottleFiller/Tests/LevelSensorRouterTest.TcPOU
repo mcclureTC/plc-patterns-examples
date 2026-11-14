@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="LevelSensorRouterTest" Id="{f0180544-4627-4950-82c6-0f683fcf2d25}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LevelSensorRouterTest EXTENDS TestBase
+VAR
+    _Hardware     : FakeLevelSensor(Level := 10.0);
+    _Simulated    : FakeLevelSensor(Level := 90.0);
+    _ToHardware   : LevelSensorRouter(Simulated := _Simulated, Hardware := _Hardware, UseHardware := TRUE);
+    _ToSimulation : LevelSensorRouter(Simulated := _Simulated, Hardware := _Hardware, UseHardware := FALSE);
+    _ToNothing    : LevelSensorRouter(Simulated := 0, Hardware := 0, UseHardware := TRUE);
+END_VAR
+(*
+    LevelSensorRouterTest
+
+    Each switch setting reads its own sensor; a router with nothing to
+    choose reports an invalid reading.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Run" Id="{b1c559c2-98da-48a4-9284-1ce0df7b0e1a}">
+      <Declaration><![CDATA[METHOD PUBLIC Run
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Check(_ToHardware.Level = 10.0 AND NOT _ToHardware.IsSimulated, 'hardware chosen: it reads the hardware');
+Check(_ToSimulation.Level = 90.0 AND _ToSimulation.IsSimulated, 'simulation chosen: it reads the simulation');
+Check(NOT _ToNothing.IsValid AND _ToNothing.Level = 0.0, 'nothing chosen: invalid, level 0');
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

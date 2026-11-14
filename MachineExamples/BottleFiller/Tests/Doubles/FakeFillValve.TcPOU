@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="FakeFillValve" Id="{099672ed-f3b9-47ef-9bac-69c1b430ca3b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FakeFillValve IMPLEMENTS I_FillValve
+VAR
+    _Name      : STRING(32);
+    _OpenCount : DINT;
+END_VAR
+(*
+    FakeFillValve
+
+    Test double for I_FillValve. Counts Open() calls, reports its own name,
+    and is always open.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_FillValve" Id="{c6e60483-c25c-4a67-86b0-ac6ee4e39edd}" />
+    <Folder Name="I_Diagnosable" Id="{c22d05df-ed7f-4b66-9b43-9e6439d31f44}" />
+    <Method Name="FB_init" Id="{cf414d37-d1a5-448f-9ae1-0afaca5a3ed2}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Name         : STRING(32);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Name := Name;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Open" Id="{da2aa806-2ed8-43c7-9e7d-03a8943accaf}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Open
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_OpenCount := _OpenCount + 1;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Close" Id="{38b6f90b-9404-4e45-b0dc-c8a7f41cce8a}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Close
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsOpen" Id="{40f2f653-5214-4c00-8241-53c0b5a7e1ff}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsOpen : BOOL]]></Declaration>
+      <Get Name="Get" Id="{f5ab0d37-6c62-4e87-9242-d9c0ee156f82}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsOpen := TRUE;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsClosed" Id="{a0be4486-d1a1-4a4c-ad2e-d7278062a248}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsClosed : BOOL]]></Declaration>
+      <Get Name="Get" Id="{459a2775-50db-43c7-81ed-bba6c37d00db}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsClosed := FALSE;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Name" Id="{72357b00-7c25-4587-9785-9d97a818f3bc}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
+      <Get Name="Get" Id="{e18dbb2a-bf06-4796-b160-b89149f0bed1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Name := _Name;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{7bcaa3cd-ccf2-41eb-a99e-1391559a0889}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{00d4d43a-2175-4bf2-b07a-b00eaaac76e9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasFault := FALSE;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{8227eb5d-623b-4a0a-af60-fa6065767afd}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{76cffbeb-2e4e-4cab-959b-19cf9cbe16da}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[FaultText := '';
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="OpenCount" Id="{000bd95b-f362-4aca-a357-c201aa19a745}">
+      <Declaration><![CDATA[PROPERTY PUBLIC OpenCount : DINT]]></Declaration>
+      <Get Name="Get" Id="{2c857ffd-5ea2-4114-8125-db76a5734459}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[OpenCount := _OpenCount;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

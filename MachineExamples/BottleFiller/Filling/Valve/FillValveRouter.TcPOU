@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="FillValveRouter" Id="{ad31aecc-47f0-453d-8218-7a7e339a88ab}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FillValveRouter IMPLEMENTS I_FillValve
+VAR
+    _Chosen     : I_FillValve;
+    _IsHardware : BOOL;
+END_VAR
+(*
+    FillValveRouter
+
+    Chooses the real or the simulated fill valve once, in FB_init, from a
+    site switch, and forwards every call to it. With no valve it fails safe:
+    neither open nor closed, and faulted. Holds no logic of its own.
+
+    The tree runs and resets Chosen, not the router.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_FillValve" Id="{55f4384d-c4ea-417f-a3d6-5131eeb373a3}" />
+    <Folder Name="I_Diagnosable" Id="{5e804eaa-1402-4c4b-990b-8023411d2058}" />
+    <Method Name="FB_init" Id="{6b1e23dd-6e59-46b1-8d58-f0e5fd03546c}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Simulated    : I_FillValve;
+    Hardware     : I_FillValve;
+    UseHardware  : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsHardware := UseHardware;
+IF UseHardware THEN
+    _Chosen := Hardware;
+ELSE
+    _Chosen := Simulated;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Open" Id="{97dc1891-e7eb-418d-a09d-aec7728cd4d2}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Open
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _Chosen <> 0 THEN
+    _Chosen.Open();
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Close" Id="{0c86669b-a7eb-4239-abd4-63685ecd57fe}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Close
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _Chosen <> 0 THEN
+    _Chosen.Close();
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsOpen" Id="{c632d1f4-94fa-4362-ba65-547ddf8cba4c}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsOpen : BOOL]]></Declaration>
+      <Get Name="Get" Id="{e5da22e9-d885-41c7-b51f-32997c8aef46}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsOpen := (_Chosen <> 0) AND_THEN _Chosen.IsOpen;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsClosed" Id="{fc8d011d-a343-4e97-9462-883cafa337d1}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsClosed : BOOL]]></Declaration>
+      <Get Name="Get" Id="{8d2e1a51-7008-42cd-a9f1-fb63ec06a3b7}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsClosed := (_Chosen <> 0) AND_THEN _Chosen.IsClosed;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{8274a8ff-f3a5-48d0-9bc0-5a2758b3c436}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{119e5102-821a-4e5b-8708-07d04c95a8ef}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasFault := (_Chosen = 0) OR_ELSE _Chosen.HasFault;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{07e28ab8-0ac4-4bad-82ce-a66a78cbfd2b}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{703c9e87-85b1-4151-9bfb-102a618ce848}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF _Chosen = 0 THEN
+    FaultText := 'No valve chosen';
+ELSE
+    FaultText := _Chosen.FaultText;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Name" Id="{00cae2ce-3ffe-4856-ac30-7f9cd53afbd3}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
+      <Get Name="Get" Id="{b3d0e75b-9795-4777-b2ba-182d793d1737}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF _Chosen = 0 THEN
+    Name := 'Unassigned valve';
+ELSE
+    Name := _Chosen.Name;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Chosen" Id="{9ff04c55-1022-4bc1-ab81-1c305be99802}">
+      <Declaration><![CDATA[PROPERTY PUBLIC Chosen : I_FillValve]]></Declaration>
+      <Get Name="Get" Id="{0329e7a6-4d18-4718-9ce0-4a5fc8472b73}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Chosen := _Chosen;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsSimulated" Id="{8ff86485-2e5a-49ab-ad46-3c2ef19494db}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsSimulated : BOOL]]></Declaration>
+      <Get Name="Get" Id="{d7356cc3-c713-4d30-a0d6-a2a070941e2e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsSimulated := NOT _IsHardware;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

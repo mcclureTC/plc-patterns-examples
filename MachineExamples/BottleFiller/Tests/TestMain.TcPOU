@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="TestMain" Id="{3e065105-a0d8-405f-b981-66ef8a04fb33}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM TestMain
+VAR
+    LineTest        : LineRunsStopsAndFaultsTest;
+    ActuatorTests   : ActuatorRouterTest;
+    ValveTests      : FillValveRouterTest;
+    LevelTests      : LevelSensorRouterTest;
+    HasRun          : BOOL;
+    AllPassed       : BOOL;
+    FailedCount     : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Each test runs once, on the first scan. None of them touches the machine's
+// instances or its I/O. Read AllPassed, FailedCount and each test's
+// LastFailure in a watch window.
+IF NOT HasRun THEN
+    HasRun := TRUE;
+    LineTest.Run();
+    ActuatorTests.Run();
+    ValveTests.Run();
+    LevelTests.Run();
+    AllPassed := LineTest.HasPassed AND ActuatorTests.HasPassed
+                 AND ValveTests.HasPassed AND LevelTests.HasPassed;
+    FailedCount := LineTest.FailedCount + ActuatorTests.FailedCount
+                   + ValveTests.FailedCount + LevelTests.FailedCount;
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

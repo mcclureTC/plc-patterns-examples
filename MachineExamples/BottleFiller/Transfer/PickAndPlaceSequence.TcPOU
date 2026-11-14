@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="PickAndPlaceSequence" Id="{3e77d509-c098-4f19-a1a9-05474d38b8e0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PickAndPlaceSequence
+VAR
+    _Lift             : I_Actuator;
+    _Slide            : I_Actuator;
+    _Gripper          : I_Actuator;
+    _CurrentStep      : E_PickStep;
+    _FaultText        : STRING;
+    _IsStartRequested : BOOL;
+    _IsResetRequested : BOOL;
+    _IsConfigured     : BOOL;
+END_VAR
+(*
+    PickAndPlaceSequence
+
+    Picks a part, slides across, places it and slides back. Moves three
+    I_Actuator, injected through FB_init, and never knows what kind each
+    one is.
+
+    Call CyclicLogic() once per cycle. Start() and Reset() are requests,
+    seen during the next CyclicLogic() call. After a reset it returns home
+    the way a cycle ends: lift up, then slide in.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{86f1077a-47cc-4410-a607-5532db7a0222}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Lift         : I_Actuator;      // extended = down
+    Slide        : I_Actuator;      // extended = over the place position
+    Gripper      : I_Actuator;      // extended = closed
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Lift := Lift;
+_Slide := Slide;
+_Gripper := Gripper;
+_IsConfigured := Lift <> 0 AND Slide <> 0 AND Gripper <> 0;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Start" Id="{95f9203a-0950-4b08-858f-a4182de01c62}">
+      <Declaration><![CDATA[METHOD PUBLIC Start
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsStartRequested := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{58042303-5361-42bf-aab1-0815ea74920e}">
+      <Declaration><![CDATA[METHOD PUBLIC Reset
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsResetRequested := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{e672dde0-e197-4ecd-a806-afc8f70c28f5}">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _IsConfigured THEN
+    _CurrentStep := E_PickStep.Error;      // not wired: never call through 0
+    _FaultText := 'Pick and place not wired';
+    RETURN;
+END_IF
+
+CASE _CurrentStep OF
+    E_PickStep.Undefined:
+        _CurrentStep := E_PickStep.Idle;
+
+    E_PickStep.Idle, E_PickStep.Done:
+        IF _IsStartRequested THEN
+            _CurrentStep := E_PickStep.LowerToPick;
+        END_IF
+
+    E_PickStep.LowerToPick:   ExtendThen(Actuator := _Lift, NextStep := E_PickStep.Grip);
+    E_PickStep.Grip:          ExtendThen(Actuator := _Gripper, NextStep := E_PickStep.RaiseWithPart);
+    E_PickStep.RaiseWithPart: RetractThen(Actuator := _Lift, NextStep := E_PickStep.SlideOut);
+    E_PickStep.SlideOut:      ExtendThen(Actuator := _Slide, NextStep := E_PickStep.LowerToPlace);
+    E_PickStep.LowerToPlace:  ExtendThen(Actuator := _Lift, NextStep := E_PickStep.OpenGripper);
+    E_PickStep.OpenGripper:   RetractThen(Actuator := _Gripper, NextStep := E_PickStep.RaiseEmpty);
+    E_PickStep.RaiseEmpty:    RetractThen(Actuator := _Lift, NextStep := E_PickStep.SlideIn);
+    E_PickStep.SlideIn:       RetractThen(Actuator := _Slide, NextStep := E_PickStep.Done);
+
+    E_PickStep.Error:
+        IF _IsResetRequested THEN
+            _Lift.Reset();
+            _Slide.Reset();
+            _Gripper.Reset();
+            _FaultText := '';
+            _CurrentStep := E_PickStep.RaiseEmpty;   // go home the way a cycle ends
+        END_IF
+END_CASE
+
+_IsStartRequested := FALSE;
+_IsResetRequested := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExtendThen" Id="{8b9a1a8c-38d5-4d4c-8b6f-8142ca59cc6e}">
+      <Declaration><![CDATA[METHOD PRIVATE ExtendThen
+VAR_INPUT
+    Actuator : I_Actuator;
+    NextStep : E_PickStep;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Actuator.Extend();
+IF Actuator.IsExtended THEN
+    _CurrentStep := NextStep;
+ELSIF Actuator.HasFault THEN
+    Fail(Actuator := Actuator);
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RetractThen" Id="{8ea292be-dd56-490d-9313-b54a1ff390ba}">
+      <Declaration><![CDATA[METHOD PRIVATE RetractThen
+VAR_INPUT
+    Actuator : I_Actuator;
+    NextStep : E_PickStep;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Actuator.Retract();
+IF Actuator.IsRetracted THEN
+    _CurrentStep := NextStep;
+ELSIF Actuator.HasFault THEN
+    Fail(Actuator := Actuator);
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Fail" Id="{d7a2f104-76e2-4871-89af-81bd64bd872c}">
+      <Declaration><![CDATA[METHOD PRIVATE Fail
+VAR_INPUT
+    Actuator : I_Actuator;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_FaultText := CONCAT(CONCAT(Actuator.Name, ': '), Actuator.FaultText);
+_CurrentStep := E_PickStep.Error;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="CurrentStep" Id="{2eaf40d3-4471-4024-9b3e-b9a530f06223}">
+      <Declaration><![CDATA[PROPERTY PUBLIC CurrentStep : E_PickStep]]></Declaration>
+      <Get Name="Get" Id="{996a0230-84de-471f-be8a-56499e17601a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CurrentStep := _CurrentStep;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsBusy" Id="{660d67b9-a666-43a6-bc3b-72bccb2abc52}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsBusy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{b051ef2c-0217-4f9f-b1db-47da7887dbcf}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsBusy := _CurrentStep <> E_PickStep.Undefined AND _CurrentStep <> E_PickStep.Idle
+            AND _CurrentStep <> E_PickStep.Done AND _CurrentStep <> E_PickStep.Error;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{481346ff-a5a7-46d3-8395-1686f0c0b2ee}">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{69a32333-81b3-49d4-983e-511ed421b866}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasFault := FALSE;
+IF _IsConfigured THEN
+    HasFault := _Lift.HasFault OR _Slide.HasFault OR _Gripper.HasFault;
+END_IF
+HasFault := HasFault OR _CurrentStep = E_PickStep.Error;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{5a340fff-cb74-43be-a1dc-17c1d3ac36cc}">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{17e8ee30-2c01-434a-a3f5-317cd96d84f7}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[FaultText := _FaultText;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

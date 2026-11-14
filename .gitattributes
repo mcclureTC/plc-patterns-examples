@@ -1,0 +1,13 @@
+# TwinCAT source files are XML text with Windows line endings
+*.TcPOU   text eol=crlf
+*.TcIO    text eol=crlf
+*.TcDUT   text eol=crlf
+*.TcGVL   text eol=crlf
+*.TcTTO   text eol=crlf
+*.plcproj text eol=crlf
+*.tsproj  text eol=crlf
+*.sln     text eol=crlf
+
+# Listings are generated, with Unix line endings
+listings/**/*.st   text eol=lf
+listings/**/*.json text eol=lf

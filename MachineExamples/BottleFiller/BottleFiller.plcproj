@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{f48bc889-2946-4e87-aaf4-b76730a4ca07}</ProjectGuid>
+    <SubObjectsSortedByName>True</SubObjectsSortedByName>
+    <DownloadApplicationInfo>true</DownloadApplicationInfo>
+    <WriteProductVersion>true</WriteProductVersion>
+    <GenerateTpy>false</GenerateTpy>
+    <Name>BottleFiller</Name>
+    <ProgramVersion>3.1.4026.21</ProgramVersion>
+    <Application>{66eae6d7-1e72-4663-abd3-b85ab41a30ff}</Application>
+    <TypeSystem>{581f735d-6c0a-40b0-b884-d3740886a551}</TypeSystem>
+    <Implicit_Task_Info>{aada63fe-00c4-492f-82e7-2fa9e06d429f}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{776bd2f9-bbf9-4ff4-917c-31a3f6e6318e}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{ff1e59b6-6eae-4481-ae3b-e7c1c72c1d49}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{d60c6202-91d7-47cb-9972-68f5bf75a447}</LibraryReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Filling\E_FillStep.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\FillSequence.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\FillingModule.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\Level\FieldbusLevelSensor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\Level\I_LevelSensor.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\Level\LevelSensorRouter.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\Level\Simulation\SimulatedBottleLevel.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\Valve\FillValveRouter.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\Valve\I_FillValve.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\Valve\Simulation\SimulatedFillValve.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Filling\Valve\SolenoidValve.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Framework\EquipmentGroup.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Framework\Interfaces\I_Cyclic.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Framework\Interfaces\I_Diagnosable.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Framework\Interfaces\I_EquipmentModule.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Framework\Interfaces\I_Resettable.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Framework\ModuleGroup.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GVLs\GVL_Hmi.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GVLs\GVL_Io.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Line\E_LineState.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Line\LineModule.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Actuators\ActuatorBase.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Actuators\ActuatorRouter.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Actuators\DoubleSolenoidCylinder.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Actuators\E_ActuatorTarget.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Actuators\Gripper.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Actuators\I_Actuator.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Actuators\Simulation\SimulatedActuator.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shared\Actuators\SingleSolenoidCylinder.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Site\GVL_Sim.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Site\GVL_Site.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Site\ST_SiteSwitches.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Site\SiteCheck.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\ActuatorRouterTest.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Doubles\FakeActuator.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Doubles\FakeEquipmentModule.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Doubles\FakeFillValve.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Doubles\FakeLevelSensor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\FillValveRouterTest.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\LevelSensorRouterTest.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\LineRunsStopsAndFaultsTest.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\TestBase.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\TestMain.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Transfer\E_PickStep.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Transfer\PickAndPlaceSequence.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Transfer\TransferModule.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Documentation\BottleFiller.md">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Documentation" />
+    <Folder Include="Filling" />
+    <Folder Include="Framework" />
+    <Folder Include="GVLs" />
+    <Folder Include="Line" />
+    <Folder Include="Shared" />
+    <Folder Include="Site" />
+    <Folder Include="Tests" />
+    <Folder Include="Transfer" />
+    <Folder Include="Filling\Level" />
+    <Folder Include="Filling\Valve" />
+    <Folder Include="Framework\Interfaces" />
+    <Folder Include="Shared\Actuators" />
+    <Folder Include="Tests\Doubles" />
+    <Folder Include="Filling\Level\Simulation" />
+    <Folder Include="Filling\Valve\Simulation" />
+    <Folder Include="Shared\Actuators\Simulation" />
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+  <Data>
+    <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+        <v>{29BD8D0C-3586-4548-BB48-497B9A01693F}</v>
+        <o>
+          <v n="Name">"{29BD8D0C-3586-4548-BB48-497B9A01693F}"</v>
+          <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+            <v>NamingConventions</v>
+            <o>
+              <v n="Name">"NamingConventions"</v>
+              <d n="SubKeys" t="Hashtable" />
+              <d n="Values" t="Hashtable" />
+            </o>
+            <v>Rules</v>
+            <o>
+              <v n="Name">"Rules"</v>
+              <d n="SubKeys" t="Hashtable" />
+              <d n="Values" t="Hashtable" />
+            </o>
+          </d>
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{40450F57-0AA3-4216-96F3-5444ECB29763}</v>
+        <o>
+          <v n="Name">"{40450F57-0AA3-4216-96F3-5444ECB29763}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}</v>
+        <o>
+          <v n="Name">"{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>WriteLineIDs</v>
+            <v>False</v>
+          </d>
+        </o>
+        <v>{8F99A816-E488-41E4-9FA3-846536012284}</v>
+        <o>
+          <v n="Name">"{8F99A816-E488-41E4-9FA3-846536012284}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="String">
+            <v>DisabledWarningIds</v>
+            <v>410,5410</v>
+          </d>
+        </o>
+        <v>{eeeeeeee-3909-4298-8022-501ac3238667}</v>
+        <o>
+          <v n="Name">"{eeeeeeee-3909-4298-8022-501ac3238667}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{F66C7017-BDD8-4114-926C-81D6D687E35F}</v>
+        <o>
+          <v n="Name">"{F66C7017-BDD8-4114-926C-81D6D687E35F}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>CalcActiveTransOnly</v>
+            <v>True</v>
+          </d>
+        </o>
+      </d>
+      <d n="Values" t="Hashtable" />
+    </o>
+  </Data>
+  <TypeList>
+    <Type n="Boolean">System.Boolean</Type>
+    <Type n="Hashtable">System.Collections.Hashtable</Type>
+    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+    <Type n="String">System.String</Type>
+  </TypeList>
+</XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>

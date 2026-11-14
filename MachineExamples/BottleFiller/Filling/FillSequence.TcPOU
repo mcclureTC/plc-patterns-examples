@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="FillSequence" Id="{33be856c-0070-4a40-8562-847ba5ee9bf6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FillSequence
+VAR
+    _LevelSensor      : I_LevelSensor;
+    _FillValve        : I_FillValve;
+    _TargetLevel      : REAL := 80.0;
+    _CurrentStep      : E_FillStep := E_FillStep.Idle;
+    _IsStartRequested : BOOL;
+    _IsResetRequested : BOOL;
+    _IsConfigured     : BOOL;
+END_VAR
+(*
+    FillSequence
+
+    Opens the fill valve, waits for the target level, closes the valve.
+    Talks only to I_LevelSensor and I_FillValve, injected through FB_init.
+
+    Call CyclicLogic() once per cycle. Start() and Reset() are requests,
+    seen during the next CyclicLogic() call.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{13d5f557-41a8-46b0-80ea-467607da238e}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    LevelSensor  : I_LevelSensor;
+    FillValve    : I_FillValve;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_LevelSensor := LevelSensor;
+_FillValve := FillValve;
+_IsConfigured := LevelSensor <> 0 AND FillValve <> 0;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Start" Id="{7cbfd568-9560-44e1-89fb-e31310a49282}">
+      <Declaration><![CDATA[METHOD PUBLIC Start
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsStartRequested := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{cfa85490-4313-4b51-ad78-bfb81ba12665}">
+      <Declaration><![CDATA[METHOD PUBLIC Reset
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsResetRequested := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{c9e91c8e-7b6e-472c-99e9-c1c92305d532}">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _IsConfigured THEN
+    _CurrentStep := E_FillStep.Error;   // not wired: fail safe, never call through 0
+    RETURN;
+END_IF
+
+CASE _CurrentStep OF
+    E_FillStep.Idle, E_FillStep.Done:
+        IF _IsStartRequested THEN
+            _CurrentStep := E_FillStep.Opening;
+        END_IF
+
+    E_FillStep.Opening:
+        _FillValve.Open();
+        IF _FillValve.IsOpen THEN
+            _CurrentStep := E_FillStep.Filling;
+        ELSIF _FillValve.HasFault THEN
+            _CurrentStep := E_FillStep.Error;
+        END_IF
+
+    E_FillStep.Filling:
+        IF NOT _LevelSensor.IsValid OR _FillValve.HasFault THEN
+            _CurrentStep := E_FillStep.Error;
+        ELSIF _LevelSensor.Level >= _TargetLevel THEN
+            _CurrentStep := E_FillStep.Closing;
+        END_IF
+
+    E_FillStep.Closing:
+        _FillValve.Close();
+        IF _FillValve.IsClosed THEN
+            _CurrentStep := E_FillStep.Done;
+        ELSIF _FillValve.HasFault THEN
+            _CurrentStep := E_FillStep.Error;
+        END_IF
+
+    E_FillStep.Error:
+        _FillValve.Close();             // the one promise every valve keeps
+        IF _IsResetRequested AND _FillValve.IsClosed THEN
+            _CurrentStep := E_FillStep.Idle;
+        END_IF
+END_CASE
+
+_IsStartRequested := FALSE;
+_IsResetRequested := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="TargetLevel" Id="{376488f3-3b03-409d-822a-445236f74c11}">
+      <Declaration><![CDATA[PROPERTY PUBLIC TargetLevel : REAL]]></Declaration>
+      <Get Name="Get" Id="{49aadfc4-cf20-4e0d-990e-2479ca422016}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[TargetLevel := _TargetLevel;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{08a665c0-347f-4a89-b217-4e104028c501}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_TargetLevel := LIMIT(0.0, TargetLevel, 100.0);
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="CurrentStep" Id="{e8e14b09-84f1-40b2-9aba-16c99b02d2d6}">
+      <Declaration><![CDATA[PROPERTY PUBLIC CurrentStep : E_FillStep]]></Declaration>
+      <Get Name="Get" Id="{3165ce21-b2d4-439c-a366-a5a4f6fb4a8d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CurrentStep := _CurrentStep;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsBusy" Id="{c54d6c33-51d2-43ab-b5d9-21b9eaf11790}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsBusy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{13394f33-7905-49e8-a711-c00cbb374822}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsBusy := _CurrentStep = E_FillStep.Opening
+            OR _CurrentStep = E_FillStep.Filling
+            OR _CurrentStep = E_FillStep.Closing;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsDone" Id="{aa85685f-9ed7-4a6a-a31b-d9f64f372e32}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsDone : BOOL]]></Declaration>
+      <Get Name="Get" Id="{d010886e-7218-4b73-bd1b-67411fc343ec}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsDone := _CurrentStep = E_FillStep.Done;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasError" Id="{d55fc806-2670-4f2f-a33b-41bdc2dca120}">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasError : BOOL]]></Declaration>
+      <Get Name="Get" Id="{db5cada9-9a39-4a35-a36a-c521dbb1cfbf}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasError := _CurrentStep = E_FillStep.Error;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

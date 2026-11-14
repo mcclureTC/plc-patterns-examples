@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="SingleSolenoidCylinder" Id="{fb339b65-fb48-43cf-8772-7c0a31923916}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SingleSolenoidCylinder EXTENDS ActuatorBase
+VAR
+    _Solenoid        : REFERENCE TO BOOL;
+    _ExtendedSensor  : REFERENCE TO BOOL;
+    _RetractedSensor : REFERENCE TO BOOL;
+END_VAR
+(*
+    SingleSolenoidCylinder
+
+    One solenoid with spring return: energized extends, de-energized retracts.
+    An end sensor at each end.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{41c0be4d-0028-4627-9ef4-5429730f3eff}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains    : BOOL;
+    bInCopyCode     : BOOL;
+    Name            : STRING(32);
+    MoveTimeout     : TIME;
+    Solenoid        : REFERENCE TO BOOL;
+    ExtendedSensor  : REFERENCE TO BOOL;
+    RetractedSensor : REFERENCE TO BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Solenoid REF= Solenoid;
+_ExtendedSensor REF= ExtendedSensor;
+_RetractedSensor REF= RetractedSensor;
+Configure(Name := Name, MoveTimeout := MoveTimeout);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsWired" Id="{7a51b93f-639a-4295-bc12-ed2d7832ded6}">
+      <Declaration><![CDATA[METHOD PROTECTED IsWired : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IsWired := __ISVALIDREF(_Solenoid) AND __ISVALIDREF(_ExtendedSensor) AND __ISVALIDREF(_RetractedSensor);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="DriveOutputs" Id="{68a7a2cd-3317-4452-b1e7-0fca454248c1}">
+      <Declaration><![CDATA[METHOD PROTECTED DriveOutputs
+VAR_INPUT
+    Target : E_ActuatorTarget;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Solenoid := Target = E_ActuatorTarget.Extended;   // anything else: the spring retracts it
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsAtPosition" Id="{ffc89229-b2e5-4cbb-bd8d-c0ff6f5316e2}">
+      <Declaration><![CDATA[METHOD PROTECTED IsAtPosition : BOOL
+VAR_INPUT
+    Position : E_ActuatorTarget;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE Position OF
+    E_ActuatorTarget.Extended:
+        IsAtPosition := _ExtendedSensor AND NOT _RetractedSensor;
+    E_ActuatorTarget.Retracted:
+        IsAtPosition := _RetractedSensor AND NOT _ExtendedSensor;
+ELSE
+    IsAtPosition := FALSE;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="DriveSafe" Id="{8383670b-c803-436d-93de-315e8aba2cee}">
+      <Declaration><![CDATA[METHOD PROTECTED DriveSafe
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Solenoid := FALSE;                                 // the spring takes it to the retracted end
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

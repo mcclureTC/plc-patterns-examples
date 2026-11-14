@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="TransferModule" Id="{95b2b540-15d5-4c2e-840d-05d6c638f3a7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK TransferModule EXTENDS ModuleGroup IMPLEMENTS I_EquipmentModule
+VAR
+    _Sequence         : REFERENCE TO PickAndPlaceSequence;
+    _IsCycleRequested : BOOL;
+    _IsConfigured     : BOOL;
+END_VAR
+(*
+    TransferModule
+
+    The transfer station. Runs its PickAndPlaceSequence, then its
+    actuators. One StartCycle() moves one bottle from the filler to the
+    outfeed. It has a fault while the sequence reports one, which includes
+    every actuator's; Reset() resets both.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_EquipmentModule" Id="{5552cf9d-fb5d-4f18-a08c-605cf8275aa6}" />
+    <Folder Name="I_Diagnosable" Id="{e9d8bd45-1e5a-42c5-97e1-5cd198ad94ef}" />
+    <Folder Name="I_Resettable" Id="{8f4767c5-0e17-4083-be2a-5228f0573b69}" />
+    <Method Name="FB_init" Id="{dbdf94aa-9302-454d-8d0c-ff063f8ca83f}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Name         : STRING(32);                  // for EquipmentGroup
+    Sequence     : REFERENCE TO PickAndPlaceSequence;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Sequence REF= Sequence;
+_IsConfigured := __ISVALIDREF(Sequence);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="StartCycle" Id="{39c03b3b-4486-4ca6-a04b-efd6e88ff2df}" FolderPath="I_EquipmentModule\">
+      <Declaration><![CDATA[METHOD PUBLIC StartCycle
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsCycleRequested := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="BeforeChildren" Id="{2271a165-50a4-4c04-a06c-9b4c7d0048de}">
+      <Declaration><![CDATA[METHOD PROTECTED BeforeChildren
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _IsConfigured THEN
+    RETURN;
+END_IF
+IF _IsCycleRequested
+   AND (_Sequence.CurrentStep = E_PickStep.Idle OR _Sequence.CurrentStep = E_PickStep.Done) THEN
+    _Sequence.Start();
+    _IsCycleRequested := FALSE;
+END_IF
+_Sequence.CyclicLogic();                        // the sequence decides; the actuators move after it
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{0f69b7fa-8dfd-4213-b126-026acf807cd4}" FolderPath="I_Resettable\">
+      <Declaration><![CDATA[METHOD PUBLIC Reset
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SUPER^.Reset();                                 // the actuators
+IF _IsConfigured THEN
+    _Sequence.Reset();
+END_IF
+_IsCycleRequested := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsCycleDone" Id="{c17906d1-9bdc-4397-84ad-8efa5fd465c0}" FolderPath="I_EquipmentModule\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsCycleDone : BOOL]]></Declaration>
+      <Get Name="Get" Id="{6db286a7-282a-4daa-a107-33f0e6d12405}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsCycleDone := _IsConfigured AND_THEN (NOT _IsCycleRequested AND _Sequence.CurrentStep = E_PickStep.Done);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{c79212c9-ee31-4efe-8cd3-f806235e1750}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{b2e9e351-2c24-4f2e-819d-1b899f3eb6b1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF NOT _IsConfigured THEN
+    HasFault := TRUE;
+ELSE
+    HasFault := SUPER^.HasFault OR _Sequence.HasFault;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{752104de-2e6c-48e3-95af-5cc9374eddf7}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{7f927fc4-3156-4abf-9167-2de5392f1113}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF NOT _IsConfigured THEN
+    FaultText := 'Transfer sequence not wired';
+ELSIF SUPER^.HasFault THEN
+    FaultText := SUPER^.FaultText;              // the actuator, by name
+ELSIF _Sequence.HasFault THEN
+    FaultText := _Sequence.FaultText;
+ELSE
+    FaultText := '';
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

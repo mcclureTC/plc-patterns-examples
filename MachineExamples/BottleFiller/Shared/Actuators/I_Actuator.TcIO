@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_Actuator" Id="{1572af59-8762-4aa7-ab82-236a7667a8f1}">
+    <Declaration><![CDATA[INTERFACE I_Actuator EXTENDS I_Diagnosable, I_Resettable
+]]></Declaration>
+    <Method Name="Extend" Id="{f1d11b96-51f1-459c-82ee-0bce2f16042f}">
+      <Declaration><![CDATA[METHOD Extend
+]]></Declaration>
+    </Method>
+    <Method Name="Retract" Id="{2a108542-9fd1-4875-92c2-159f61cfc62a}">
+      <Declaration><![CDATA[METHOD Retract
+]]></Declaration>
+    </Method>
+    <Property Name="IsExtended" Id="{1d347327-f1a2-4503-8c7e-94e0a6967f28}">
+      <Declaration><![CDATA[PROPERTY IsExtended : BOOL]]></Declaration>
+      <Get Name="Get" Id="{f652c385-c674-44d9-83be-841ccb60803d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="IsRetracted" Id="{be2669e3-e812-49b3-b2a5-f68d3c60bd39}">
+      <Declaration><![CDATA[PROPERTY IsRetracted : BOOL]]></Declaration>
+      <Get Name="Get" Id="{c693387a-0b5a-4b4d-8a7e-979f9e5e0b8a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_LevelSensor" Id="{c1cc926b-52db-417e-b348-55fb85077677}">
+    <Declaration><![CDATA[INTERFACE I_LevelSensor EXTENDS __SYSTEM.IQueryInterface
+]]></Declaration>
+    <Property Name="Level" Id="{678bf59a-deb8-469f-bcfe-814c1271208b}">
+      <Declaration><![CDATA[PROPERTY Level : REAL]]></Declaration>
+      <Get Name="Get" Id="{08457b3d-77ea-4622-9ce4-4579c0e05e50}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="IsValid" Id="{28d8c8e2-7068-41f4-a44e-22db8a849fb4}">
+      <Declaration><![CDATA[PROPERTY IsValid : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ba8374d3-3924-40a7-b2df-42b38548e5eb}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

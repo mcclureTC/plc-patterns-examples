@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="SimulatedFillValve" Id="{800cab1e-269f-46da-861e-7724b6a8f89d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SimulatedFillValve IMPLEMENTS I_FillValve, I_Resettable, I_Cyclic
+VAR
+    _Name          : STRING(32);
+    _SwitchTime    : TIME;
+    _FaultDelay    : TIME;
+    _Command       : BOOL;
+    _Feedback      : BOOL;
+    _SwitchTimer   : TON;
+    _MismatchTimer : TON;
+    _IsStuck       : BOOL;
+END_VAR
+(*
+    SimulatedFillValve
+
+    A fill valve with no hardware: the feedback follows the command after
+    SwitchTime. Supervised like the real valve: a fault while feedback and
+    command disagree for longer than FaultDelay.
+
+    Failure hook: SetStuck(TRUE) freezes the feedback where it is.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_FillValve" Id="{1e5f6eb2-2f0a-4f69-a7f0-ed5ac8f2b122}" />
+    <Folder Name="I_Diagnosable" Id="{2154e15d-de1b-4b9a-bf42-11e29960d457}" />
+    <Folder Name="I_Resettable" Id="{11581dc7-5281-483c-9368-74dbb4e34f75}" />
+    <Folder Name="I_Cyclic" Id="{61a7f815-c23e-497c-ad5c-2b807ed79ca8}" />
+    <Method Name="FB_init" Id="{2125768b-4199-48e8-bcaf-822c025f9596}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Name         : STRING(32);
+    SwitchTime   : TIME;
+    FaultDelay   : TIME;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Name := Name;
+_SwitchTime := SwitchTime;
+_FaultDelay := FaultDelay;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Open" Id="{301f1567-b894-461c-8192-2556876807d2}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Open
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Command := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Close" Id="{38ed6970-80a0-477a-8df2-434911154886}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[METHOD PUBLIC Close
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Command := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetStuck" Id="{56d78411-0877-4097-8394-199b3b6f3781}">
+      <Declaration><![CDATA[METHOD PUBLIC SetStuck
+VAR_INPUT
+    IsStuck : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsStuck := IsStuck;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{71cb8146-e03a-48b8-a96a-ca30b1f42d2e}" FolderPath="I_Cyclic\">
+      <Declaration><![CDATA[METHOD PUBLIC CyclicLogic
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_SwitchTimer(IN := (_Command XOR _Feedback) AND NOT _IsStuck, PT := _SwitchTime);
+IF _SwitchTimer.Q THEN
+    _Feedback := _Command;
+    _SwitchTimer(IN := FALSE);
+END_IF
+_MismatchTimer(IN := _Command XOR _Feedback, PT := _FaultDelay);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{784d8d05-196d-49a0-825c-27d37dc062a8}" FolderPath="I_Resettable\">
+      <Declaration><![CDATA[METHOD PUBLIC Reset
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_MismatchTimer(IN := FALSE);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsOpen" Id="{827f9d63-c8cc-42f8-a26d-6b16586c35ac}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsOpen : BOOL]]></Declaration>
+      <Get Name="Get" Id="{1973b91e-a457-45e6-b2d6-0d2580d6570f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsOpen := _Command AND _Feedback;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsClosed" Id="{dce269f3-3f54-4407-930b-535d33eaab65}" FolderPath="I_FillValve\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsClosed : BOOL]]></Declaration>
+      <Get Name="Get" Id="{20ccee7c-660e-45bc-af01-7c4a4f5db52c}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsClosed := NOT (_Command OR _Feedback);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{fc721906-6a60-430f-b81a-9de440fd1620}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2d976a27-c889-4c8b-8539-e2b341e347d4}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasFault := _MismatchTimer.Q;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{ef6e6e81-f105-4eb8-bda0-7c55f94be75f}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{41d003d4-55e8-452c-8c01-42f4549b93cf}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF _MismatchTimer.Q THEN
+    FaultText := 'Feedback does not match the command';
+ELSE
+    FaultText := '';
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Name" Id="{2269bbef-5f1f-4cbd-9bbf-51a776f30900}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
+      <Get Name="Get" Id="{8812034b-4134-4a48-939a-776e56fc3d83}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Name := _Name;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsStuck" Id="{bc0c4b5e-fecd-4909-ba3a-fdb0eed4c780}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsStuck : BOOL]]></Declaration>
+      <Get Name="Get" Id="{c53fe992-04be-429c-bffb-e243f66d93cc}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsStuck := _IsStuck;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="DoubleSolenoidCylinder" Id="{3e153bbc-3509-49ff-aac3-6a6f83d82a21}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK DoubleSolenoidCylinder EXTENDS ActuatorBase
+VAR
+    _ExtendCoil      : REFERENCE TO BOOL;
+    _RetractCoil     : REFERENCE TO BOOL;
+    _ExtendedSensor  : REFERENCE TO BOOL;
+    _RetractedSensor : REFERENCE TO BOOL;
+END_VAR
+(*
+    DoubleSolenoidCylinder
+
+    One coil per direction. With both coils off, the valve holds the cylinder
+    where it is. An end sensor at each end.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{a436b52e-e589-4dad-8ee2-17f8cd85fda2}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains    : BOOL;
+    bInCopyCode     : BOOL;
+    Name            : STRING(32);
+    MoveTimeout     : TIME;
+    ExtendCoil      : REFERENCE TO BOOL;
+    RetractCoil     : REFERENCE TO BOOL;
+    ExtendedSensor  : REFERENCE TO BOOL;
+    RetractedSensor : REFERENCE TO BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_ExtendCoil REF= ExtendCoil;
+_RetractCoil REF= RetractCoil;
+_ExtendedSensor REF= ExtendedSensor;
+_RetractedSensor REF= RetractedSensor;
+Configure(Name := Name, MoveTimeout := MoveTimeout);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsWired" Id="{1272444c-1122-4ebb-a837-d37d5c309a54}">
+      <Declaration><![CDATA[METHOD PROTECTED IsWired : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IsWired := __ISVALIDREF(_ExtendCoil) AND __ISVALIDREF(_RetractCoil)
+       AND __ISVALIDREF(_ExtendedSensor) AND __ISVALIDREF(_RetractedSensor);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="DriveOutputs" Id="{97454984-e894-4f8a-82f6-c1ed370cab00}">
+      <Declaration><![CDATA[METHOD PROTECTED DriveOutputs
+VAR_INPUT
+    Target : E_ActuatorTarget;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_ExtendCoil := Target = E_ActuatorTarget.Extended;
+_RetractCoil := Target = E_ActuatorTarget.Retracted;  // None: both off, so it holds
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsAtPosition" Id="{2d80d024-c776-4558-89a0-dee999323dc3}">
+      <Declaration><![CDATA[METHOD PROTECTED IsAtPosition : BOOL
+VAR_INPUT
+    Position : E_ActuatorTarget;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE Position OF
+    E_ActuatorTarget.Extended:
+        IsAtPosition := _ExtendedSensor AND NOT _RetractedSensor;
+    E_ActuatorTarget.Retracted:
+        IsAtPosition := _RetractedSensor AND NOT _ExtendedSensor;
+ELSE
+    IsAtPosition := FALSE;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="DriveSafe" Id="{acd883bb-3c3c-4ce3-9667-2c865f4a3f39}">
+      <Declaration><![CDATA[METHOD PROTECTED DriveSafe
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_ExtendCoil := FALSE;                               // both off: the cylinder stays where it is
+_RetractCoil := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

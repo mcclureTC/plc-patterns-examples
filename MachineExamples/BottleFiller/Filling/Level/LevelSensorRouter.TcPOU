@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="LevelSensorRouter" Id="{97a9304e-93a3-4894-8e17-f4896fef8492}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LevelSensorRouter IMPLEMENTS I_LevelSensor
+VAR
+    _Chosen     : I_LevelSensor;
+    _IsHardware : BOOL;
+END_VAR
+(*
+    LevelSensorRouter
+
+    Chooses the real or the simulated level sensor once, in FB_init, from a
+    site switch, and forwards every read to it. With no sensor it fails
+    safe: invalid, level 0. Holds no logic of its own.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_LevelSensor" Id="{703b85b6-e7df-4099-a763-8320367c6c1b}" />
+    <Method Name="FB_init" Id="{77908c83-b97b-4798-b2e5-3ef4a3ffc9a6}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Simulated    : I_LevelSensor;
+    Hardware     : I_LevelSensor;
+    UseHardware  : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsHardware := UseHardware;
+IF UseHardware THEN
+    _Chosen := Hardware;
+ELSE
+    _Chosen := Simulated;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Level" Id="{afc454eb-f183-4834-bef5-89183cd43954}" FolderPath="I_LevelSensor\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Level : REAL]]></Declaration>
+      <Get Name="Get" Id="{91350981-b583-4f54-b326-d487166a4f51}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF _Chosen = 0 THEN
+    Level := 0.0;
+ELSE
+    Level := _Chosen.Level;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsValid" Id="{2a5c9cdc-e8f4-4e96-828b-158fffa6a418}" FolderPath="I_LevelSensor\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsValid : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ae01332a-bd20-4eb6-a7af-b6fdcf2e7a38}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsValid := (_Chosen <> 0) AND_THEN _Chosen.IsValid;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Chosen" Id="{20e5abec-6fd5-4e89-b176-8db3ae77bc78}">
+      <Declaration><![CDATA[PROPERTY PUBLIC Chosen : I_LevelSensor]]></Declaration>
+      <Get Name="Get" Id="{87c786d3-4018-4311-b965-91a03725aa7e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Chosen := _Chosen;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsSimulated" Id="{38722287-8c65-4211-9751-81395155c703}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsSimulated : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ae1f2e0b-71d0-4bd5-8c1d-3948c9152bbd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsSimulated := NOT _IsHardware;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

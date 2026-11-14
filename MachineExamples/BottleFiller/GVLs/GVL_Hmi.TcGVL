@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Hmi" Id="{341396bd-a59b-4c2b-b46c-43ddd4d3d29d}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+    // From the HMI
+    StartButton          : BOOL;
+    StopButton           : BOOL;
+    ResetButton          : BOOL;
+
+    // To the HMI
+    LineState            : E_LineState;
+    IsStopping           : BOOL;
+    FaultText            : STRING;
+    SimulatedDevices     : STRING(255);     // empty when every device is real
+    IsFillValveSimulated : BOOL;
+    IsBottleLevelSimulated : BOOL;
+    IsLiftSimulated      : BOOL;
+    IsSlideSimulated     : BOOL;
+    IsGripperSimulated   : BOOL;
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

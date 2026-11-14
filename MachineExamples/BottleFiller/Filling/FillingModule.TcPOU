@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="FillingModule" Id="{82891a28-b7e4-4b49-a14a-4b021699e96a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FillingModule EXTENDS ModuleGroup IMPLEMENTS I_EquipmentModule
+VAR
+    _Sequence         : REFERENCE TO FillSequence;
+    _IsCycleRequested : BOOL;
+    _IsConfigured     : BOOL;
+END_VAR
+(*
+    FillingModule
+
+    The filling station. Runs its FillSequence, then its devices. One
+    StartCycle() fills one bottle. It has a fault while any of its devices
+    has one, or while the sequence has stopped with an error; Reset()
+    resets both.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_EquipmentModule" Id="{77204942-61cd-4b3a-ace4-7cb9bd3aa0e4}" />
+    <Folder Name="I_Diagnosable" Id="{1e83f0f9-afc6-410b-b457-89e18a4dcd92}" />
+    <Folder Name="I_Resettable" Id="{6e35057f-3f52-48e4-a7fc-ab28d985717d}" />
+    <Method Name="FB_init" Id="{23c9ed63-073d-430f-a703-d2412c98d0cb}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Name         : STRING(32);                  // for EquipmentGroup
+    Sequence     : REFERENCE TO FillSequence;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Sequence REF= Sequence;
+_IsConfigured := __ISVALIDREF(Sequence);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="StartCycle" Id="{b54919d4-ed99-4a40-b63a-8ed28dc96500}" FolderPath="I_EquipmentModule\">
+      <Declaration><![CDATA[METHOD PUBLIC StartCycle
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsCycleRequested := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="BeforeChildren" Id="{79d1e698-cc6f-4600-b05d-e5ef00bf4ff9}">
+      <Declaration><![CDATA[METHOD PROTECTED BeforeChildren
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _IsConfigured THEN
+    RETURN;
+END_IF
+IF _IsCycleRequested
+   AND (_Sequence.CurrentStep = E_FillStep.Idle OR _Sequence.CurrentStep = E_FillStep.Done) THEN
+    _Sequence.Start();
+    _IsCycleRequested := FALSE;
+END_IF
+_Sequence.CyclicLogic();                        // the sequence decides; the valve acts after it
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{a1f2e1e4-f9da-4e59-9339-cb4bc3f1aaa2}" FolderPath="I_Resettable\">
+      <Declaration><![CDATA[METHOD PUBLIC Reset
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SUPER^.Reset();                                 // the devices
+IF _IsConfigured THEN
+    _Sequence.Reset();
+END_IF
+_IsCycleRequested := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsCycleDone" Id="{2422762a-57c4-48dc-a964-898ef31b0b50}" FolderPath="I_EquipmentModule\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsCycleDone : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ca89378b-9b97-4621-ae13-c78bda08c374}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsCycleDone := _IsConfigured AND_THEN (NOT _IsCycleRequested AND _Sequence.IsDone);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{43d48042-aa6e-47ba-86bf-a9bae2e03a29}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{b0866940-3abd-4505-99ed-bb6eb2f2931b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF NOT _IsConfigured THEN
+    HasFault := TRUE;
+ELSE
+    HasFault := SUPER^.HasFault OR _Sequence.HasError;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{dded78d1-2722-4bbf-a5cc-3881861eaa6b}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{8c6e9ddd-44cc-45c6-8fe6-f8c618ff61ce}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF NOT _IsConfigured THEN
+    FaultText := 'Fill sequence not wired';
+ELSIF SUPER^.HasFault THEN
+    FaultText := SUPER^.FaultText;              // the device, by name
+ELSIF _Sequence.HasError THEN
+    FaultText := 'Fill sequence stopped; reset to continue';
+ELSE
+    FaultText := '';
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

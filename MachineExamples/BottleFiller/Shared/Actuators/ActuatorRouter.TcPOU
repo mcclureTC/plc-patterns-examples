@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="ActuatorRouter" Id="{843cb5e9-a499-4b66-905c-13c54d666a49}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ActuatorRouter IMPLEMENTS I_Actuator
+VAR
+    _Chosen     : I_Actuator;
+    _IsHardware : BOOL;
+END_VAR
+(*
+    ActuatorRouter
+
+    Chooses the real or the simulated actuator once, in FB_init, from a site
+    switch, and forwards every call to it. With no actuator it fails safe:
+    neither extended nor retracted, and faulted. Holds no logic of its own.
+
+    The tree runs and resets Chosen, not the router.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_Actuator" Id="{1c97e74e-3bc7-4383-8c16-a57b4537e8b2}" />
+    <Folder Name="I_Diagnosable" Id="{8d85cc2c-f7bb-4b47-9367-fc3186fcffe3}" />
+    <Folder Name="I_Resettable" Id="{2f1cce79-fdf8-4d9f-b669-04b8d458cf26}" />
+    <Method Name="FB_init" Id="{9570f71e-773e-48ee-b9ec-e1270ad891af}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Simulated    : I_Actuator;
+    Hardware     : I_Actuator;
+    UseHardware  : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsHardware := UseHardware;
+IF UseHardware THEN
+    _Chosen := Hardware;
+ELSE
+    _Chosen := Simulated;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Extend" Id="{5ea56c75-7165-4988-a3c5-05c3908d2aad}" FolderPath="I_Actuator\">
+      <Declaration><![CDATA[METHOD PUBLIC Extend
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _Chosen <> 0 THEN
+    _Chosen.Extend();
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Retract" Id="{cd14680d-dd64-419c-8872-9cec5f3b2d52}" FolderPath="I_Actuator\">
+      <Declaration><![CDATA[METHOD PUBLIC Retract
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _Chosen <> 0 THEN
+    _Chosen.Retract();
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{591a33c2-ff54-4b20-92e7-c6576a850b79}" FolderPath="I_Resettable\">
+      <Declaration><![CDATA[METHOD PUBLIC Reset
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _Chosen <> 0 THEN
+    _Chosen.Reset();
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsExtended" Id="{3f97b248-85fa-430f-bc9f-eb33afa60207}" FolderPath="I_Actuator\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsExtended : BOOL]]></Declaration>
+      <Get Name="Get" Id="{d0303b47-b682-4edc-a6e0-50a25be07b1f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsExtended := (_Chosen <> 0) AND_THEN _Chosen.IsExtended;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsRetracted" Id="{db35428d-1369-4e2a-a818-991e9fdb437f}" FolderPath="I_Actuator\">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsRetracted : BOOL]]></Declaration>
+      <Get Name="Get" Id="{e274607b-9e57-4330-8862-d8ea74883fae}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsRetracted := (_Chosen <> 0) AND_THEN _Chosen.IsRetracted;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HasFault" Id="{24320928-f6c9-4e72-92e3-d28f580ef70c}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasFault : BOOL]]></Declaration>
+      <Get Name="Get" Id="{dcb48e28-2fc5-4646-ab76-01db8d10cb43}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasFault := (_Chosen = 0) OR_ELSE _Chosen.HasFault;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultText" Id="{0c4ea0ba-0d6b-4956-bfa0-8e0a2a503098}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC FaultText : STRING]]></Declaration>
+      <Get Name="Get" Id="{756ecf85-b93d-4118-8974-7daf073b0f6f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF _Chosen = 0 THEN
+    FaultText := 'No actuator chosen';
+ELSE
+    FaultText := _Chosen.FaultText;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Name" Id="{d74e7243-e223-4d1b-9a25-567b904669bc}" FolderPath="I_Diagnosable\">
+      <Declaration><![CDATA[PROPERTY PUBLIC Name : STRING]]></Declaration>
+      <Get Name="Get" Id="{63fa5b0a-52f3-4f85-bcbd-7a9cbfd565b0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IF _Chosen = 0 THEN
+    Name := 'Unassigned actuator';
+ELSE
+    Name := _Chosen.Name;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Chosen" Id="{fe999c48-b6ae-4013-83f0-6380e74c9ce3}">
+      <Declaration><![CDATA[PROPERTY PUBLIC Chosen : I_Actuator]]></Declaration>
+      <Get Name="Get" Id="{b2656033-b769-4e66-beda-e346a95f0cb8}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Chosen := _Chosen;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsSimulated" Id="{3ee7120f-976d-47be-9441-91a026fe587c}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsSimulated : BOOL]]></Declaration>
+      <Get Name="Get" Id="{355d78e7-c414-406c-ad21-b8bbd81a0015}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsSimulated := NOT _IsHardware;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

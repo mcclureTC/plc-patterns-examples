@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="TestBase" Id="{bbfacc1b-6edc-4e96-93b1-17ef295c77e2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT TestBase
+VAR
+    _CheckCount  : INT;
+    _FailedCount : INT;
+    _LastFailure : STRING(255);
+END_VAR
+(*
+    TestBase
+
+    Shared bookkeeping for framework-free tests. A derived test implements
+    Run() and calls Check() for everything it wants to verify.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Run" Id="{610eac88-b82b-4045-8839-e1b39f435b34}">
+      <Declaration><![CDATA[METHOD PUBLIC ABSTRACT Run
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Check" Id="{52c0f254-0892-4913-aba1-3f3ce84c4223}">
+      <Declaration><![CDATA[METHOD PROTECTED Check
+VAR_INPUT
+    Condition : BOOL;
+    Message   : STRING(255);    // what should be true, not what went wrong
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_CheckCount := _CheckCount + 1;
+IF NOT Condition THEN
+    _FailedCount := _FailedCount + 1;
+    _LastFailure := Message;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="HasPassed" Id="{3ae12a68-f97c-4c30-a9d5-8c7623a6a616}">
+      <Declaration><![CDATA[PROPERTY PUBLIC HasPassed : BOOL]]></Declaration>
+      <Get Name="Get" Id="{37d841fc-b476-447c-a6bd-c90a87f48695}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HasPassed := _CheckCount > 0 AND _FailedCount = 0;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FailedCount" Id="{b30a307b-8983-4716-a68b-40808f5c04b5}">
+      <Declaration><![CDATA[PROPERTY PUBLIC FailedCount : INT]]></Declaration>
+      <Get Name="Get" Id="{a6c30978-732d-466d-b878-48b4b859ffdd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[FailedCount := _FailedCount;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="LastFailure" Id="{690de6af-ac6a-4fb1-9b0d-0904c25e7b0e}">
+      <Declaration><![CDATA[PROPERTY PUBLIC LastFailure : STRING(255)]]></Declaration>
+      <Get Name="Get" Id="{48ac8d99-8ee5-4fbc-9440-6bb854f5bf81}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[LastFailure := _LastFailure;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

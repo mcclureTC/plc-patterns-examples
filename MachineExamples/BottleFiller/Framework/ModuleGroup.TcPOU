@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="ModuleGroup" Id="{65045b5f-d709-4f6c-bb98-173d3b161f0f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ModuleGroup EXTENDS EquipmentGroup IMPLEMENTS I_Cyclic
+VAR
+    _Cyclics : ARRAY[0..MaxChildren - 1] OF I_Cyclic;
+END_VAR
+(*
+    ModuleGroup
+
+    An EquipmentGroup that also runs its children: one CyclicLogic() call
+    runs every child that implements I_Cyclic, in the order they were
+    added, between this module's own BeforeChildren() and AfterChildren().
+    A station with logic of its own extends it and overrides the hooks.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="I_Cyclic" Id="{54659eeb-139c-49e2-b047-dc74112881e7}" />
+    <Method Name="AddChild" Id="{994ba994-b460-4c42-aca2-a337234d3e22}">
+      <Declaration><![CDATA[METHOD PUBLIC AddChild : BOOL
+VAR_INPUT
+    Child : I_Diagnosable;
+END_VAR
+VAR
+    Cyclic : I_Cyclic;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT SUPER^.AddChild(Child := Child) THEN
+    AddChild := FALSE;
+    RETURN;
+END_IF
+IF __QUERYINTERFACE(Child, Cyclic) THEN
+    _Cyclics[_Count - 1] := Cyclic;   // the slot SUPER^.AddChild() just filled
+END_IF
+AddChild := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicLogic" Id="{d97d0510-3360-4b50-ab9c-e1d97b52dabb}" FolderPath="I_Cyclic\">
+      <Declaration><![CDATA[METHOD PUBLIC FINAL CyclicLogic
+VAR
+    i : DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[BeforeChildren();
+FOR i := 0 TO _Count - 1 DO
+    IF _Cyclics[i] <> 0 THEN
+        _Cyclics[i].CyclicLogic();
+    END_IF
+END_FOR
+AfterChildren();
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="BeforeChildren" Id="{c757a140-6070-442c-b6a7-0885388c103c}">
+      <Declaration><![CDATA[METHOD PROTECTED BeforeChildren      // decide what the children should do this scan
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AfterChildren" Id="{759bbe27-6c50-4941-b340-4a3bcbfb2a86}">
+      <Declaration><![CDATA[METHOD PROTECTED AfterChildren       // read what they reported this scan
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

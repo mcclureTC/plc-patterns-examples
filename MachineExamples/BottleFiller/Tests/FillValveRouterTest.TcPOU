@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="FillValveRouterTest" Id="{89c1a64b-5729-4a28-9f3f-b76cceff0131}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FillValveRouterTest EXTENDS TestBase
+VAR
+    _Hardware     : FakeFillValve(Name := 'Hardware');
+    _Simulated    : FakeFillValve(Name := 'Simulated');
+    _ToHardware   : FillValveRouter(Simulated := _Simulated, Hardware := _Hardware, UseHardware := TRUE);
+    _ToSimulation : FillValveRouter(Simulated := _Simulated, Hardware := _Hardware, UseHardware := FALSE);
+    _ToNothing    : FillValveRouter(Simulated := 0, Hardware := 0, UseHardware := TRUE);
+END_VAR
+(*
+    FillValveRouterTest
+
+    Each switch setting chooses its own valve and forwards to it alone;
+    a router with nothing to choose fails safe.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Run" Id="{0219de86-4f5d-46fb-b74d-b54161ac7c5d}">
+      <Declaration><![CDATA[METHOD PUBLIC Run
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_ToHardware.Open();
+Check(_Hardware.OpenCount = 1 AND _Simulated.OpenCount = 0, 'hardware chosen: only the hardware opens');
+Check(_ToHardware.Name = 'Hardware' AND NOT _ToHardware.IsSimulated, 'hardware chosen: it reports the hardware');
+
+_ToSimulation.Open();
+Check(_Simulated.OpenCount = 1 AND _Hardware.OpenCount = 1, 'simulation chosen: only the simulation opens');
+Check(_ToSimulation.Name = 'Simulated' AND _ToSimulation.IsSimulated, 'simulation chosen: it reports the simulation');
+
+_ToNothing.Open();
+Check(NOT _ToNothing.IsOpen AND NOT _ToNothing.IsClosed AND _ToNothing.HasFault,
+      'nothing chosen: neither open nor closed, and faulted');
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

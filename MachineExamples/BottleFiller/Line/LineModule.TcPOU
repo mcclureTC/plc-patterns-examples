@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="LineModule" Id="{62cab6e6-9e04-4fa3-8e93-a9298d90b181}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LineModule EXTENDS ModuleGroup
+VAR
+    _Filler           : I_EquipmentModule;
+    _Transfer         : I_EquipmentModule;
+    _State            : E_LineState;
+    _IsStartRequested : BOOL;
+    _IsStopping       : BOOL;
+    _IsConfigured     : BOOL;
+END_VAR
+(*
+    LineModule
+
+    The machine module. Fills a bottle, moves it out, and repeats until
+    stopped. Commands its two stations in BeforeChildren(), before they
+    run in the same scan.
+
+    Start() starts the line. Stop() lets the bottle in progress finish.
+    A fault anywhere in the tree stops commanding and shows Faulted; once
+    the tree no longer reports a fault, the line is Stopped and waits for
+    Start(). Reset(), inherited, resets the whole tree.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{cf30e8e7-6d9a-4344-a37d-5f1e7183ab83}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Name         : STRING(32);                  // for EquipmentGroup
+    Filler       : I_EquipmentModule;
+    Transfer     : I_EquipmentModule;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Filler := Filler;
+_Transfer := Transfer;
+_IsConfigured := Filler <> 0 AND Transfer <> 0;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Start" Id="{9901e0cc-ab41-4877-8495-b2acdaac1def}">
+      <Declaration><![CDATA[METHOD PUBLIC Start
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsStartRequested := TRUE;
+_IsStopping := FALSE;                           // a start cancels a stop that hasn't been taken yet
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Stop" Id="{456472e9-e71d-4b4a-b2ad-de565a7bc205}">
+      <Declaration><![CDATA[METHOD PUBLIC Stop
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _State <> E_LineState.Stopped THEN
+    _IsStopping := TRUE;                        // taken when the bottle is out
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="BeforeChildren" Id="{302bfbdd-cc5e-4dd2-b9f1-928c8b9f4919}">
+      <Declaration><![CDATA[METHOD PROTECTED BeforeChildren
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT _IsConfigured THEN
+    _State := E_LineState.Faulted;
+    RETURN;
+END_IF
+
+// A fault anywhere in the tree: command nothing
+IF HasFault THEN
+    _State := E_LineState.Faulted;
+    _IsStopping := FALSE;
+    _IsStartRequested := FALSE;
+    RETURN;
+END_IF
+
+CASE _State OF
+    E_LineState.Stopped:
+        IF _IsStartRequested THEN
+            _Filler.StartCycle();
+            _State := E_LineState.Filling;
+        END_IF
+
+    E_LineState.Filling:
+        IF _Filler.IsCycleDone THEN
+            _Transfer.StartCycle();
+            _State := E_LineState.Transferring;
+        END_IF
+
+    E_LineState.Transferring:
+        IF _Transfer.IsCycleDone THEN
+            IF _IsStopping THEN
+                _IsStopping := FALSE;
+                _State := E_LineState.Stopped;
+            ELSE
+                _Filler.StartCycle();           // the next bottle
+                _State := E_LineState.Filling;
+            END_IF
+        END_IF
+
+    E_LineState.Faulted:
+        _State := E_LineState.Stopped;          // no fault any more; wait for Start
+END_CASE
+
+_IsStartRequested := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="State" Id="{00ecd315-e32d-4573-beb8-532c4d2cd862}">
+      <Declaration><![CDATA[PROPERTY PUBLIC State : E_LineState]]></Declaration>
+      <Get Name="Get" Id="{709c4ad2-5585-429a-ae17-28e0c65a88e4}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[State := _State;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="IsStopping" Id="{2841533f-da21-49c3-ba6f-4979f9058fb9}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsStopping : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ee116164-8811-4894-a77a-32ece4fac818}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsStopping := _IsStopping;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

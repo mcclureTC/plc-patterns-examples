@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4026.0">
+  <POU Name="SimulatedActuator" Id="{b906c577-8c3a-47af-a9b5-710536454723}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SimulatedActuator EXTENDS ActuatorBase
+VAR
+    _TravelTime   : TIME;
+    _DrivenTarget : E_ActuatorTarget;
+    _Travel       : TON;
+    _IsStuck      : BOOL;
+END_VAR
+(*
+    SimulatedActuator
+
+    An actuator with no hardware: it reaches the commanded end TravelTime
+    after the move starts. The supervision is ActuatorBase's, unchanged, so
+    a move that never arrives faults exactly as a real one would.
+
+    Failure hook: SetStuck(TRUE) stops it moving, so the move times out.
+    Starts at neither end: the first move of each direction takes its
+    travel time.
+*)
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{a3d07b7e-2712-4450-bb77-b235c8aa5b0e}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+    bInitRetains : BOOL;
+    bInCopyCode  : BOOL;
+    Name         : STRING(32);
+    MoveTimeout  : TIME;
+    TravelTime   : TIME;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_TravelTime := TravelTime;
+Configure(Name := Name, MoveTimeout := MoveTimeout);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetStuck" Id="{88129a51-d36b-4068-8bf9-5e5048c67c46}">
+      <Declaration><![CDATA[METHOD PUBLIC SetStuck
+VAR_INPUT
+    IsStuck : BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_IsStuck := IsStuck;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsWired" Id="{877280bb-2959-4252-993b-9d498b2f2ef9}">
+      <Declaration><![CDATA[METHOD PROTECTED IsWired : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IsWired := TRUE;                                    // nothing to wire
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="DriveOutputs" Id="{53fc417a-a77c-4f72-93f3-538587f364de}">
+      <Declaration><![CDATA[METHOD PROTECTED DriveOutputs
+VAR_INPUT
+    Target : E_ActuatorTarget;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF Target <> _DrivenTarget THEN
+    _DrivenTarget := Target;
+    _Travel(IN := FALSE);                           // a new move starts from the beginning
+END_IF
+_Travel(IN := Target <> E_ActuatorTarget.None AND NOT _IsStuck, PT := _TravelTime);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsAtPosition" Id="{9420f458-a73a-4d97-af67-10902bdc454c}">
+      <Declaration><![CDATA[METHOD PROTECTED IsAtPosition : BOOL
+VAR_INPUT
+    Position : E_ActuatorTarget;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IsAtPosition := Position <> E_ActuatorTarget.None AND Position = _DrivenTarget AND _Travel.Q;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="DriveSafe" Id="{1a0ef214-311d-4dab-bd79-2f3ae6243b8a}">
+      <Declaration><![CDATA[METHOD PROTECTED DriveSafe
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Travel(IN := FALSE);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsStuck" Id="{4cff7691-d16e-4fe9-9dd2-99f894a9117c}">
+      <Declaration><![CDATA[PROPERTY PUBLIC IsStuck : BOOL]]></Declaration>
+      <Get Name="Get" Id="{d316ccfd-d32f-41b7-8692-f160eb1a6ada}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsStuck := _IsStuck;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>
